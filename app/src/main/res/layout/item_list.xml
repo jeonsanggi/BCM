@@ -2,15 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     android:layout_margin="15dp"
     android:padding="10dp">
 
 
     <TextView
         android:id="@+id/textView_list_id"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:padding="5dp" />
+
+
+    <TextView
+        android:id="@+id/textView_list_company"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_margin="5dp"
@@ -19,16 +28,48 @@
 
     <TextView
         android:id="@+id/textView_list_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="4"
         android:layout_margin="5dp"
         android:padding="5dp" />
 
+    <TextView
+        android:id="@+id/textView_list_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:padding="5dp" />
+
+
+    <TextView
+        android:id="@+id/textView_list_tel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/textView_list_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:padding="5dp" />
 
     <TextView
         android:id="@+id/textView_list_address"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:layout_margin="5dp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/test"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="5"
         android:layout_margin="5dp"

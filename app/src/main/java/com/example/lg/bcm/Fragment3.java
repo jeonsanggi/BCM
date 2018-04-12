@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,10 +39,19 @@ public class Fragment3 extends Fragment {
     //
     private static String TAG = "phptest_MainActivity";
 
+
     private static final String TAG_JSON="webnautes";
     private static final String TAG_ID = "id";
+    private static final String TAG_COMPANY = "company";
     private static final String TAG_NAME = "name";
+    private static final String TAG_PHONE = "phone";
+    private static final String TAG_TEL = "tel";
+    private static final String TAG_EMAIL = "email";
     private static final String TAG_ADDRESS ="address";
+
+    String android_num;
+
+
 
     //private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
@@ -61,7 +71,7 @@ public class Fragment3 extends Fragment {
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         Fragment3.GetData task = new Fragment3.GetData();
-        task.execute("http://192.168.58.130/getjson.php");
+        task.execute("http://192.168.58.132/getjson.php");
 
         return view;
     }
@@ -81,6 +91,7 @@ public class Fragment3 extends Fragment {
 
         if (id == R.id.mEdit){
                 Intent intent = new Intent(getActivity(),add.class);
+                intent.putExtra("android_num", android_num);
                 startActivityForResult(intent, 1);
         }
         return super.onOptionsItemSelected(item);
@@ -122,10 +133,12 @@ public class Fragment3 extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-
+            Bundle extra = getArguments();
+            android_num = extra.getString("android_num");
             String serverURL = params[0];
+            String postParameters = "&android_num=" + android_num;
 
-
+            Log.v("태그", android_num);
             try {
 
                 URL url = new URL(serverURL);
@@ -138,6 +151,11 @@ public class Fragment3 extends Fragment {
                 httpURLConnection.setDoInput(true);
                 httpURLConnection.connect();
 
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.write(postParameters.getBytes("UTF-8"));
+                outputStream.flush();
+                outputStream.close();
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
                 Log.d(TAG, "response code - " + responseStatusCode);
@@ -190,13 +208,21 @@ public class Fragment3 extends Fragment {
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 String id = item.getString(TAG_ID);
+                String company = item.getString(TAG_COMPANY);
                 String name = item.getString(TAG_NAME);
+                String phone = item.getString(TAG_PHONE);
+                String tel = item.getString(TAG_TEL);
+                String email = item.getString(TAG_EMAIL);
                 String address = item.getString(TAG_ADDRESS);
 
                 HashMap<String,String> hashMap = new HashMap<>();
 
                 hashMap.put(TAG_ID, id);
+                hashMap.put(TAG_COMPANY, company);
                 hashMap.put(TAG_NAME, name);
+                hashMap.put(TAG_PHONE, phone);
+                hashMap.put(TAG_TEL, tel);
+                hashMap.put(TAG_EMAIL, email);
                 hashMap.put(TAG_ADDRESS, address);
 
                 mArrayList.add(hashMap);
@@ -204,8 +230,8 @@ public class Fragment3 extends Fragment {
 
             ListAdapter adapter = new SimpleAdapter(
                     ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_ID, TAG_NAME, TAG_ADDRESS},
-                    new int[]{R.id.textView_list_id, R.id.textView_list_name, R.id.textView_list_address}
+                    new String[]{TAG_ID, TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS},
+                    new int[]{R.id.textView_list_id, R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address}
             );
 
             mlistView.setAdapter(adapter);
