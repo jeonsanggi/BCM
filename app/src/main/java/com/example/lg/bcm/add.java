@@ -38,12 +38,16 @@ public class add extends AppCompatActivity {
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
     private TextView mTextViewResult;
+    String android_num;
 
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.insert);
+
+        Intent intent = getIntent();
+        android_num = intent.getStringExtra("android_num");
 
         mEditTextCompany = (EditText)findViewById(R.id.editText_main_company);
         mEditTextName = (EditText)findViewById(R.id.editText_main_name);
@@ -67,7 +71,7 @@ public class add extends AppCompatActivity {
                 String address = mEditTextAddress.getText().toString();
 
                 InsertData task = new InsertData();
-                task.execute(name,address);
+                task.execute(company,name,phone,tel,email,address);
 
                 mEditTextCompany.setText("");
                 mEditTextName.setText("");
@@ -141,8 +145,8 @@ public class add extends AppCompatActivity {
             String email = (String)params[4];
             String address = (String)params[5];
 
-            String serverURL = "http://192.168.58.130/insert.php";
-            String postParameters = "&company=" + company + "name=" + name + "phone=" + phone + "&tel=" + tel +"email=" + email + "&address=" + address;
+            String serverURL = "http://192.168.58.132/insert.php";
+            String postParameters = "android_num" + android_num +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address;
 
 
             try {
