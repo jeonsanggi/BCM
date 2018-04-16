@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         callFragment(FRAGMENT1);
         sTess = new TessBaseAPI();
 
-        language = "kor";
+        language = "kor+eng";
         datapath = getFilesDir()+"/tesseract/";
         if(checkFile(new File(datapath+"tessdata/")))
         {

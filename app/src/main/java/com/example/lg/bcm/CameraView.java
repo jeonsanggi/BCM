@@ -217,7 +217,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
 
                 //ROI 선 조정
-                mRelativeParams = new android.widget.RelativeLayout.LayoutParams(mRoiWidth + 5, mRoiHeight + 5);
+                mRelativeParams = new android.widget.RelativeLayout.LayoutParams(mRoiWidth , mRoiHeight );
                 mRelativeParams.setMargins(mRoiX, mRoiY, 0, 0);
                 mSurfaceRoiBorder.setLayoutParams(mRelativeParams);
 

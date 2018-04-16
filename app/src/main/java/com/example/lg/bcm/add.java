@@ -141,7 +141,7 @@ public class add extends AppCompatActivity {
             String email = (String)params[4];
             String address = (String)params[5];
 
-            String serverURL = "http://192.168.1.102/bcm/insert.php";
+            String serverURL = "http://192.168.1.34/insert.php";
               String postParameters = "&company=" + company + "name=" + name + "phone=" + phone + "&tel=" + tel +"email=" + email + "&address=" + address;
 
 
