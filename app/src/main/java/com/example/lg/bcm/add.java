@@ -38,8 +38,13 @@ public class add extends AppCompatActivity {
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
     private TextView mTextViewResult;
-    String android_num;
 
+    String company;
+    String android_num;
+    String phone;
+    String tel;
+    String email;
+    String address;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +52,13 @@ public class add extends AppCompatActivity {
         setContentView(R.layout.insert);
 
         Intent intent = getIntent();
+        company = intent.getStringExtra("company");
         android_num = intent.getStringExtra("android_num");
+        phone = intent.getStringExtra("phone");
+        tel = intent.getStringExtra("tel");
+        email = intent.getStringExtra("email");
+        address = intent.getStringExtra("address");
+
 
         mEditTextCompany = (EditText)findViewById(R.id.editText_main_company);
         mEditTextName = (EditText)findViewById(R.id.editText_main_name);
@@ -56,6 +67,13 @@ public class add extends AppCompatActivity {
         mEditTextEmail = (EditText)findViewById(R.id.editText_main_email);
         mEditTextAddress = (EditText)findViewById(R.id.editText_main_address);
         mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
+
+        mEditTextCompany.setText(company);
+        mEditTextName.setText(android_num);
+        mEditTextPhone.setText(phone);
+        mEditTextTel.setText(tel);
+        mEditTextEmail.setText(email);
+        mEditTextAddress.setText(address);
 
 
         Button buttonInsert = (Button)findViewById(R.id.button_main_insert);
@@ -144,9 +162,10 @@ public class add extends AppCompatActivity {
             String tel = (String)params[3];
             String email = (String)params[4];
             String address = (String)params[5];
+            Log.v("add 에서의 태그값은 :", android_num);
 
-            String serverURL = "http://192.168.58.132/insert.php";
-            String postParameters = "android_num" + android_num +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address;
+            String serverURL = "http://192.168.1.150/insert.php";
+            String postParameters = "android_num=" + android_num +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address;
 
 
             try {

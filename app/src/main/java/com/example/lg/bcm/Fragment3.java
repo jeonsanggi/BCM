@@ -49,9 +49,12 @@ public class Fragment3 extends Fragment {
     private static final String TAG_EMAIL = "email";
     private static final String TAG_ADDRESS ="address";
 
+    String company;
     String android_num;
-
-
+    String phone;
+    String tel;
+    String email;
+    String address;
 
     //private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
@@ -71,7 +74,7 @@ public class Fragment3 extends Fragment {
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         Fragment3.GetData task = new Fragment3.GetData();
-        task.execute("http://192.168.58.132/getjson.php");
+        task.execute("http://192.168.1.150/getjson.php");
 
         return view;
     }
@@ -91,7 +94,12 @@ public class Fragment3 extends Fragment {
 
         if (id == R.id.mEdit){
                 Intent intent = new Intent(getActivity(),add.class);
+                intent.putExtra("company", company);
                 intent.putExtra("android_num", android_num);
+                intent.putExtra("phone", phone);
+                intent.putExtra("tel", tel);
+                intent.putExtra("email", email);
+                intent.putExtra("address", address);
                 startActivityForResult(intent, 1);
         }
         return super.onOptionsItemSelected(item);
@@ -208,12 +216,12 @@ public class Fragment3 extends Fragment {
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 String id = item.getString(TAG_ID);
-                String company = item.getString(TAG_COMPANY);
+                company = item.getString(TAG_COMPANY);
                 String name = item.getString(TAG_NAME);
-                String phone = item.getString(TAG_PHONE);
-                String tel = item.getString(TAG_TEL);
-                String email = item.getString(TAG_EMAIL);
-                String address = item.getString(TAG_ADDRESS);
+                phone = item.getString(TAG_PHONE);
+                tel = item.getString(TAG_TEL);
+                email = item.getString(TAG_EMAIL);
+                address = item.getString(TAG_ADDRESS);
 
                 HashMap<String,String> hashMap = new HashMap<>();
 
