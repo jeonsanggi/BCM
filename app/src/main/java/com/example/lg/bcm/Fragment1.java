@@ -61,7 +61,9 @@ public class Fragment1 extends Fragment {
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         GetData task = new GetData();
-        task.execute("http://192.168.1.150/getjson.php");
+
+        task.execute("http://192.168.1.102/bcm/getjson.php");
+
 
       //  Button bt = (Button) view.findViewById(R.id.bt_add);
 

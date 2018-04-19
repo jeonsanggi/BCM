@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         callFragment(FRAGMENT1);
         sTess = new TessBaseAPI();
 
-        language = "kor";
+        language = "eng";
         datapath = getFilesDir()+"/tesseract/";
         if(checkFile(new File(datapath+"tessdata/")))
         {
@@ -131,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.bt_tab2 :
                 // '버튼2' 클릭 시 '프래그먼트2' 호출
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
+                //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent intent = new Intent(MainActivity.this, CameraView.class);
                 startActivityForResult(intent,2);
 
                 break;
@@ -164,13 +164,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case 2:
                 // '프래그먼트2' 호출
-                Fragment2 fragment2 = new Fragment2();
+                /*Fragment2 fragment2 = new Fragment2();
                 if(fragment2 != null) {
                     fragment2.setBitmap(bmp);
                     fragment2.setString(ocrresult);
                 }
                 transaction.replace(R.id.fragment_container, fragment2);
-                transaction.commit();
+                transaction.commit();*/
                 break;
 
             case 3:
@@ -188,9 +188,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==2 && resultCode == RESULT_OK){
-            bmp = (Bitmap) data.getExtras().get("data");
+            bmp = (Bitmap) data.getParcelableExtra("STRING_IMG_RESULT");
             sTess.setImage(bmp);
-            ocrresult = sTess.getUTF8Text();
+            ocrresult = data.getStringExtra("STRING_OCR_RESULT");
             callFragment(FRAGMENT2);
         }
     }

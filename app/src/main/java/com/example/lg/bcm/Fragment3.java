@@ -74,7 +74,9 @@ public class Fragment3 extends Fragment {
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         Fragment3.GetData task = new Fragment3.GetData();
-        task.execute("http://192.168.1.150/getjson.php");
+
+        task.execute("http://192.168.1.102/bcm/getjson.php");
+
 
         return view;
     }
