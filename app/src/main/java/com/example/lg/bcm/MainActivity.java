@@ -1,13 +1,17 @@
 package com.example.lg.bcm;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,9 +28,11 @@ import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private static String TAG = "휴대폰 정보 가져오기";
     private final int FRAGMENT1 =1;
     private final int FRAGMENT2 =2;
     private final int FRAGMENT3 =3;
+
 
     private Button bt_tab1, bt_tab2, bt_tab3;
     ///////////////////
@@ -36,10 +42,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String language ="";
     private String datapath="";
     private String ocrresult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         bt_tab1 = (Button)findViewById(R.id.bt_tab1);
         bt_tab2 = (Button)findViewById(R.id.bt_tab2);
@@ -49,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_tab1.setOnClickListener(this);
         bt_tab2.setOnClickListener(this);
         bt_tab3.setOnClickListener(this);
+
+
 
         // 임의로 액티비티 호출 시점에 어느 프레그먼트를 프레임레이아웃에 띄울 것인지를 정함
         callFragment(FRAGMENT1);
@@ -137,11 +148,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // 프래그먼트 사용을 위해넘기기
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String android_id = Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
+        Bundle bundle = new Bundle();
+        bundle.putString("android_num", android_id);;
 
         switch (frament_no){
             case 1:
                 // '프래그먼트1' 호출
                 Fragment1 fragment1 = new Fragment1();
+                fragment1.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, fragment1);
                 transaction.commit();
                 break;
@@ -160,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case 3:
                 // '프래그먼트2' 호출
                 Fragment3 fragment3 = new Fragment3();
+                fragment3.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, fragment3);
                 transaction.commit();
                 break;

@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,7 +61,9 @@ public class Fragment1 extends Fragment {
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         GetData task = new GetData();
+
         task.execute("http://192.168.1.102/bcm/getjson.php");
+
 
       //  Button bt = (Button) view.findViewById(R.id.bt_add);
 
@@ -123,8 +126,10 @@ public class Fragment1 extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-
+            Bundle extra = getArguments();
+            String android_num = extra.getString("android_num");
             String serverURL = params[0];
+            String postParameters = "android_num=" + android_num;
 
 
             try {
@@ -139,6 +144,10 @@ public class Fragment1 extends Fragment {
                 httpURLConnection.setDoInput(true);
                 httpURLConnection.connect();
 
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.write(postParameters.getBytes("UTF-8"));
+                outputStream.flush();
+                outputStream.close();
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
                 Log.d(TAG, "response code - " + responseStatusCode);
