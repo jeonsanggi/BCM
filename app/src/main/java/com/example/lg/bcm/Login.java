@@ -5,19 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-
-import com.example.lg.bcm.R;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,12 +29,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by LG on 2018-04-17.
  */
-public class Fragment3 extends Fragment {
-    //
-    private static String TAG = "phptest_MainActivity";
 
+public class Login extends AppCompatActivity{
+    private static String TAG = "phptest_MainActivity";
 
     private static final String TAG_JSON="webnautes";
     private static final String TAG_ID = "id";
@@ -49,60 +44,64 @@ public class Fragment3 extends Fragment {
     private static final String TAG_EMAIL = "email";
     private static final String TAG_ADDRESS ="address";
 
-    String company;
-    String android_num;
-    String phone;
-    String tel;
-    String email;
-    String address;
+    private EditText User_ID;
+    private EditText User_PW;
 
-    //private TextView mTextViewResult;
+    private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
-    ListView mlistView;
+   ListView mlistView;
     String mJsonString;
-    //
-    Context ct;
+    String user_id;
+    String name;
 
-    public Fragment3( ){
+
+    public Login(){
     }
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View view =  (View) inflater.inflate(R.layout.fragment_fragment3, container, false);
-        setHasOptionsMenu(true);
-        mlistView = (ListView) view.findViewById(R.id.listView_main_list);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login);
+
+
+        User_ID = (EditText)findViewById(R.id.editText_login_id);
+        User_PW = (EditText)findViewById(R.id.editText_login_pw);
+
+        mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
+        //mlistView = (ListView) findViewById(R.id.listView_main_list);
         mArrayList = new ArrayList<>();
-        ct = inflater.getContext();
-        Fragment3.GetData task = new Fragment3.GetData();
-        task.execute("http://192.168.1.150/getjson.php");
 
-        return view;
-    }
+        Button buttonInsert = (Button)findViewById(R.id.button_main_login);
+        buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user_id = User_ID.getText().toString();
+                String user_pw = User_PW.getText().toString();
 
-    public void onResume(){
-        super.onResume();
-        getActivity().invalidateOptionsMenu();
-    }
+                Login.GetData task = new Login.GetData();
+                task.execute(user_id, user_pw);
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.edit_menu, menu);
-    }
+                User_ID.setText("");
+                User_PW.setText("");
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id =  item.getItemId();
+            }
+        });
+        /*buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        if (id == R.id.mEdit){
-                Intent intent = new Intent(getActivity(),add.class);
-                intent.putExtra("company", company);
-                intent.putExtra("android_num", android_num);
-                intent.putExtra("phone", phone);
-                intent.putExtra("tel", tel);
-                intent.putExtra("email", email);
-                intent.putExtra("address", address);
-                startActivityForResult(intent, 1);
-        }
-        return super.onOptionsItemSelected(item);
+                String user_id = User_ID.getText().toString();
+                String user_pw = User_PW.getText().toString();
+
+                Login.GetData task = new Login.GetData();
+                task.execute(user_id, user_pw);
+
+                User_ID.setText("");
+                User_PW.setText("");
+
+            }
+        });*/
     }
 
 
@@ -114,7 +113,7 @@ public class Fragment3 extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            progressDialog = ProgressDialog.show( ct,
+            progressDialog = ProgressDialog.show( Login.this,
                     "Please Wait", null, true, true);
         }
 
@@ -124,12 +123,12 @@ public class Fragment3 extends Fragment {
             super.onPostExecute(result);
 
             progressDialog.dismiss();
-            //mTextViewResult.setText(result);
+           // mTextViewResult.setText(result);
             Log.d(TAG, "response  - " + result);
 
             if (result == null){
 
-              //  mTextViewResult.setText(errorString);
+               // mTextViewResult.setText(errorString);
             }
             else {
 
@@ -141,12 +140,13 @@ public class Fragment3 extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-            Bundle extra = getArguments();
-            android_num = extra.getString("android_num");
-            String serverURL = params[0];
-            String postParameters = "&android_num=" + android_num;
 
-            Log.v("태그", android_num);
+            String user_id = (String)params[0];
+            String user_pw = (String)params[1];
+            String serverURL = "http://192.168.1.150/Login_getbc.php";
+            String postParameters = "user_id=" + user_id + "&user_pw=" + user_pw;
+
+            Log.v("왜 안되는것일까", user_id);
             try {
 
                 URL url = new URL(serverURL);
@@ -159,11 +159,11 @@ public class Fragment3 extends Fragment {
                 httpURLConnection.setDoInput(true);
                 httpURLConnection.connect();
 
-
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 outputStream.write(postParameters.getBytes("UTF-8"));
                 outputStream.flush();
                 outputStream.close();
+
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
                 Log.d(TAG, "response code - " + responseStatusCode);
@@ -216,12 +216,12 @@ public class Fragment3 extends Fragment {
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 String id = item.getString(TAG_ID);
-                company = item.getString(TAG_COMPANY);
-                String name = item.getString(TAG_NAME);
-                phone = item.getString(TAG_PHONE);
-                tel = item.getString(TAG_TEL);
-                email = item.getString(TAG_EMAIL);
-                address = item.getString(TAG_ADDRESS);
+                String company = item.getString(TAG_COMPANY);
+                name = item.getString(TAG_NAME);
+                String phone = item.getString(TAG_PHONE);
+                String tel = item.getString(TAG_TEL);
+                String email = item.getString(TAG_EMAIL);
+                String address = item.getString(TAG_ADDRESS);
 
                 HashMap<String,String> hashMap = new HashMap<>();
 
@@ -236,18 +236,21 @@ public class Fragment3 extends Fragment {
                 mArrayList.add(hashMap);
             }
 
-            ListAdapter adapter = new SimpleAdapter(
-                    ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_ID, TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS},
-                    new int[]{R.id.textView_list_id, R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address}
-            );
-
-            mlistView.setAdapter(adapter);
+            Log.v("sucess를 하엿는가", TAG_NAME);
 
         } catch (JSONException e) {
 
             Log.d(TAG, "showResult : ", e);
         }
 
+        if(name.equals(user_id)){
+            Intent intent = new Intent(Login.this,MainActivity.class);
+            startActivity(intent);
+        }
+
     }
+
+
 }
+
+
