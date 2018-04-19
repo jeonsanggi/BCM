@@ -354,6 +354,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
         Resources resources = getApplicationContext().getResources();
 
+
         DisplayMetrics metrics = resources.getDisplayMetrics();
 
         float px = dp * (metrics.densityDpi / 160f);
