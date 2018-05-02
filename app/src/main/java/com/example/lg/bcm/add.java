@@ -164,7 +164,7 @@ public class add extends AppCompatActivity {
             String address = (String)params[5];
             Log.v("add 에서의 태그값은 :", android_num);
 
-            String serverURL = "http://192.168.1.102/bcm/insert.php";
+            String serverURL = "http://192.168.1.150/insert.php";
   
             String postParameters = "android_num=" + android_num +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address;
 
