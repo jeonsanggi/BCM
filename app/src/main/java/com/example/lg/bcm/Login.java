@@ -1,19 +1,24 @@
 package com.example.lg.bcm;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,13 +51,18 @@ public class Login extends AppCompatActivity{
 
     private EditText User_ID;
     private EditText User_PW;
+    CheckBox autoLogin;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
    ListView mlistView;
     String mJsonString;
     String user_id;
+    String user_pw;
     String name;
+
 
 
     public Login(){
@@ -67,41 +77,66 @@ public class Login extends AppCompatActivity{
 
         User_ID = (EditText)findViewById(R.id.editText_login_id);
         User_PW = (EditText)findViewById(R.id.editText_login_pw);
+        autoLogin = (CheckBox)findViewById(R.id.checkBox);
+
 
         mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
         //mlistView = (ListView) findViewById(R.id.listView_main_list);
         mArrayList = new ArrayList<>();
 
-        Button buttonInsert = (Button)findViewById(R.id.button_main_login);
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
+        pref = getSharedPreferences("pref", 0);
+        editor = pref.edit();
+
+        if(pref.getBoolean("auto_Login_enabled",false)){
+            User_ID.setText(pref.getString("ID",""));
+            User_PW.setText(pref.getString("PW",""));
+            autoLogin.setChecked(true);
+
+            user_id = User_ID.getText().toString();
+            user_pw = User_PW.getText().toString();
+
+            Login.GetData task = new Login.GetData();
+            task.execute(user_id, user_pw);
+        }else{
+            Button buttonInsert = (Button) findViewById(R.id.button_main_login);
+            buttonInsert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    user_id = User_ID.getText().toString();
+                    user_pw = User_PW.getText().toString();
+
+                    Login.GetData task = new Login.GetData();
+                    task.execute(user_id, user_pw);
+
+
+                    /*User_ID.setText("");
+                    User_PW.setText("");*/
+
+                }
+            });
+        }
+
+        autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                user_id = User_ID.getText().toString();
-                String user_pw = User_PW.getText().toString();
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    String ID = User_ID.getText().toString();
+                    String PW = User_PW.getText().toString();
 
-                Login.GetData task = new Login.GetData();
-                task.execute(user_id, user_pw);
+                    editor.putString("ID", ID);
+                    editor.putString("PW", PW);
+                    editor.putBoolean("auto_Login_enabled", true);
+                    editor.commit();
 
-                User_ID.setText("");
-                User_PW.setText("");
-
+                }else{
+                    editor.remove("ID");
+                    editor.remove("PW");
+                    editor.remove("auto_Login_enabled");
+                    editor.clear();
+                    editor.commit();
+                }
             }
         });
-        /*buttonInsert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String user_id = User_ID.getText().toString();
-                String user_pw = User_PW.getText().toString();
-
-                Login.GetData task = new Login.GetData();
-                task.execute(user_id, user_pw);
-
-                User_ID.setText("");
-                User_PW.setText("");
-
-            }
-        });*/
     }
 
 
