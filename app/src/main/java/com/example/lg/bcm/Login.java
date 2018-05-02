@@ -39,15 +39,6 @@ import java.util.HashMap;
 
 public class Login extends AppCompatActivity{
     private static String TAG = "phptest_MainActivity";
-
-    private static final String TAG_JSON="webnautes";
-    private static final String TAG_ID = "id";
-    private static final String TAG_COMPANY = "company";
-    private static final String TAG_NAME = "name";
-    private static final String TAG_PHONE = "phone";
-    private static final String TAG_TEL = "tel";
-    private static final String TAG_EMAIL = "email";
-    private static final String TAG_ADDRESS ="address";
     private static final String TAG_JSON="logincheck";
     private static final String TAG_CHECK="check";
 
@@ -58,13 +49,12 @@ public class Login extends AppCompatActivity{
     SharedPreferences pref;
     SharedPreferences.Editor editor;
 
-    private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
-   ListView mlistView;
+
     String mJsonString;
     String user_id;
     String user_pw;
-    String name;
+
 
 
     public Login(){
@@ -81,9 +71,6 @@ public class Login extends AppCompatActivity{
         User_PW = (EditText)findViewById(R.id.editText_login_pw);
         autoLogin = (CheckBox)findViewById(R.id.checkBox);
 
-
-        mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
-        //mlistView = (ListView) findViewById(R.id.listView_main_list);
         mArrayList = new ArrayList<>();
 
         pref = getSharedPreferences("pref", 0);
@@ -109,10 +96,6 @@ public class Login extends AppCompatActivity{
 
                     Login.GetData task = new Login.GetData();
                     task.execute(user_id, user_pw);
-
-
-                    /*User_ID.setText("");
-                    User_PW.setText("");*/
 
             }
         });
@@ -173,7 +156,6 @@ public class Login extends AppCompatActivity{
 
             if (result == null){
 
-               // mTextViewResult.setText(errorString);
             }
             else{
                 mJsonString =result;

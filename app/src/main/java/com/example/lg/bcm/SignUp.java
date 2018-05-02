@@ -41,17 +41,11 @@ public class SignUp extends AppCompatActivity {
     private EditText mEditTextTel;
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
-    private String imgurl;
-    private Button signup_bt;
+
     private static final String TAG_JSON="signupcheck";
     private static final String TAG_CHECK="check";
 
-    String company;
-    String android_num;
-    String phone;
-    String tel;
-    String email;
-    String address;
+
     String mJsonString;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
