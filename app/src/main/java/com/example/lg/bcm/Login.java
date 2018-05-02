@@ -1,14 +1,18 @@
 package com.example.lg.bcm;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -36,6 +40,7 @@ import java.util.HashMap;
 public class Login extends AppCompatActivity{
     private static String TAG = "phptest_MainActivity";
 
+    private static final String TAG_JSON="webnautes";
     private static final String TAG_ID = "id";
     private static final String TAG_COMPANY = "company";
     private static final String TAG_NAME = "name";
@@ -49,13 +54,21 @@ public class Login extends AppCompatActivity{
 
     private EditText User_ID;
     private EditText User_PW;
+    CheckBox autoLogin;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
    ListView mlistView;
     String mJsonString;
     String user_id;
+    String user_pw;
     String name;
+
+
+    public Login(){
+    }
 
 
     @Override
@@ -63,25 +76,43 @@ public class Login extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+
         User_ID = (EditText)findViewById(R.id.editText_login_id);
         User_PW = (EditText)findViewById(R.id.editText_login_pw);
+        autoLogin = (CheckBox)findViewById(R.id.checkBox);
+
 
         mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
         //mlistView = (ListView) findViewById(R.id.listView_main_list);
         mArrayList = new ArrayList<>();
 
-        Button buttonInsert = (Button)findViewById(R.id.button_main_login);
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                user_id = User_ID.getText().toString();
-                String user_pw = User_PW.getText().toString();
+        pref = getSharedPreferences("pref", 0);
+        editor = pref.edit();
 
-                Login.GetData task = new Login.GetData();
-                task.execute(user_id, user_pw);
+        if(pref.getBoolean("auto_Login_enabled",false)){
+            User_ID.setText(pref.getString("ID",""));
+            User_PW.setText(pref.getString("PW",""));
+            autoLogin.setChecked(true);
 
-                User_ID.setText("");
-                User_PW.setText("");
+            user_id = User_ID.getText().toString();
+            user_pw = User_PW.getText().toString();
+
+            Login.GetData task = new Login.GetData();
+            task.execute(user_id, user_pw);
+        }else{
+            Button buttonInsert = (Button) findViewById(R.id.button_main_login);
+            buttonInsert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    user_id = User_ID.getText().toString();
+                    user_pw = User_PW.getText().toString();
+
+                    Login.GetData task = new Login.GetData();
+                    task.execute(user_id, user_pw);
+
+
+                    /*User_ID.setText("");
+                    User_PW.setText("");*/
 
             }
         });
@@ -91,6 +122,29 @@ public class Login extends AppCompatActivity{
                 Intent intent = new Intent(Login.this,SignUp.class);
                 startActivity(intent);
                 finish();
+                }
+            });
+        }
+
+        autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    String ID = User_ID.getText().toString();
+                    String PW = User_PW.getText().toString();
+
+                    editor.putString("ID", ID);
+                    editor.putString("PW", PW);
+                    editor.putBoolean("auto_Login_enabled", true);
+                    editor.commit();
+
+                }else{
+                    editor.remove("ID");
+                    editor.remove("PW");
+                    editor.remove("auto_Login_enabled");
+                    editor.clear();
+                    editor.commit();
+                }
             }
         });
     }
@@ -114,9 +168,6 @@ public class Login extends AppCompatActivity{
             super.onPostExecute(result);
 
             progressDialog.dismiss();
-            String check = result;
-            System.out.println(result);
-            System.out.println(check);
            // mTextViewResult.setText(result);
             Log.d(TAG, "response  - " + result);
 
@@ -179,6 +230,7 @@ public class Login extends AppCompatActivity{
                 while((line = bufferedReader.readLine()) != null){
                     sb.append(line);
                 }
+
 
                 bufferedReader.close();
                 Log.d(TAG,sb.toString().trim());
