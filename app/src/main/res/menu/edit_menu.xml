@@ -5,5 +5,11 @@
     <item
         android:id="@+id/mEdit"
         android:title = "편집"
-        app:showAsAction = "always"/>
+        app:showAsAction = "never"/>
+
+    <item
+        android:id="@+id/LogOut"
+        android:title = "로그아웃"
+        app:showAsAction = "never"/>
+
 </menu>

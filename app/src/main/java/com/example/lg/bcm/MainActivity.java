@@ -42,13 +42,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String language ="";
     private String datapath="";
     private String ocrresult;
-
+    private String user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        Intent intent = getIntent();
+        user_id = intent.getStringExtra("user_id");
 
         bt_tab1 = (Button)findViewById(R.id.bt_tab1);
         bt_tab2 = (Button)findViewById(R.id.bt_tab2);
@@ -148,10 +149,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // 프래그먼트 사용을 위해넘기기
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        String android_id = Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
         Bundle bundle = new Bundle();
-        bundle.putString("android_num", android_id);;
+        bundle.putString("user_id", user_id);;
 
         switch (frament_no){
             case 1:

@@ -8,7 +8,7 @@
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/textView_list_id"
+        android:id="@+id/textView_list_seq"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -67,7 +67,7 @@
         android:padding="5dp" />
 
     <TextView
-        android:id="@+id/test"
+        android:id="@+id/textView_list_imgurl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="5"

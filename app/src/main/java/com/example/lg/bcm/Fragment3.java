@@ -48,14 +48,15 @@ public class Fragment3 extends Fragment {
     private static final String TAG_TEL = "tel";
     private static final String TAG_EMAIL = "email";
     private static final String TAG_ADDRESS ="address";
-
+    private static final String TAG_IMGURL="imgurl";
+    private String user_id;
     String company;
-    String android_num;
+    String name;
     String phone;
     String tel;
     String email;
     String address;
-
+    String imgurl;
     //private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
     ListView mlistView;
@@ -75,7 +76,7 @@ public class Fragment3 extends Fragment {
         ct = inflater.getContext();
         Fragment3.GetData task = new Fragment3.GetData();
 
-        task.execute("http://192.168.1.102/bcm/getjson.php");
+        task.execute("http://192.168.1.102/bcm/getMyInfo.php");
 
 
         return view;
@@ -96,13 +97,19 @@ public class Fragment3 extends Fragment {
 
         if (id == R.id.mEdit){
                 Intent intent = new Intent(getActivity(),add.class);
+                intent.putExtra("user_id",user_id);
                 intent.putExtra("company", company);
-                intent.putExtra("android_num", android_num);
+                intent.putExtra("name", name);
                 intent.putExtra("phone", phone);
                 intent.putExtra("tel", tel);
                 intent.putExtra("email", email);
                 intent.putExtra("address", address);
+                intent.putExtra("imgurl",imgurl);
                 startActivityForResult(intent, 1);
+
+        }else if (id == R.id.LogOut){
+            Intent intent = new Intent(getActivity(),Login.class);
+            startActivityForResult(intent, 1);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -144,11 +151,10 @@ public class Fragment3 extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             Bundle extra = getArguments();
-            android_num = extra.getString("android_num");
+            user_id = extra.getString("user_id");
             String serverURL = params[0];
-            String postParameters = "&android_num=" + android_num;
+            String postParameters = "id=" + user_id;
 
-            Log.v("태그", android_num);
             try {
 
                 URL url = new URL(serverURL);
@@ -189,7 +195,6 @@ public class Fragment3 extends Fragment {
                     sb.append(line);
                 }
 
-
                 bufferedReader.close();
 
 
@@ -217,31 +222,31 @@ public class Fragment3 extends Fragment {
 
                 JSONObject item = jsonArray.getJSONObject(i);
 
-                String id = item.getString(TAG_ID);
+
                 company = item.getString(TAG_COMPANY);
-                String name = item.getString(TAG_NAME);
+                name = item.getString(TAG_NAME);
                 phone = item.getString(TAG_PHONE);
                 tel = item.getString(TAG_TEL);
                 email = item.getString(TAG_EMAIL);
                 address = item.getString(TAG_ADDRESS);
-
+                imgurl = item.getString(TAG_IMGURL);
                 HashMap<String,String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_ID, id);
                 hashMap.put(TAG_COMPANY, company);
                 hashMap.put(TAG_NAME, name);
                 hashMap.put(TAG_PHONE, phone);
                 hashMap.put(TAG_TEL, tel);
                 hashMap.put(TAG_EMAIL, email);
                 hashMap.put(TAG_ADDRESS, address);
+                hashMap.put(TAG_IMGURL, imgurl);
 
                 mArrayList.add(hashMap);
             }
 
             ListAdapter adapter = new SimpleAdapter(
                     ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_ID, TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS},
-                    new int[]{R.id.textView_list_id, R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address}
+                    new String[]{TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS, TAG_IMGURL},
+                    new int[]{ R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address}
             );
 
             mlistView.setAdapter(adapter);
