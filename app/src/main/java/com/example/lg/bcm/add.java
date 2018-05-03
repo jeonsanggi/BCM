@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,28 +39,29 @@ public class add extends AppCompatActivity {
     private EditText mEditTextTel;
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
-    private TextView mTextViewResult;
-
+    private TextView mEditTextImgurl;
+    String user_id;
     String company;
-    String android_num;
+    String name;
     String phone;
     String tel;
     String email;
     String address;
-
-
+    String imgurl;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.insert);
 
+
         Intent intent = getIntent();
+        user_id = intent.getStringExtra("user_id");
         company = intent.getStringExtra("company");
-        android_num = intent.getStringExtra("android_num");
+        name = intent.getStringExtra("name");
         phone = intent.getStringExtra("phone");
         tel = intent.getStringExtra("tel");
         email = intent.getStringExtra("email");
         address = intent.getStringExtra("address");
-
+        imgurl = intent.getStringExtra("imgurl");
 
         mEditTextCompany = (EditText)findViewById(R.id.editText_main_company);
         mEditTextName = (EditText)findViewById(R.id.editText_main_name);
@@ -66,15 +69,15 @@ public class add extends AppCompatActivity {
         mEditTextTel = (EditText)findViewById(R.id.editText_main_tel);
         mEditTextEmail = (EditText)findViewById(R.id.editText_main_email);
         mEditTextAddress = (EditText)findViewById(R.id.editText_main_address);
-        mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
+        mEditTextImgurl = (TextView)findViewById(R.id.textView_main_imgurl);
 
         mEditTextCompany.setText(company);
-        mEditTextName.setText(android_num);
+        mEditTextName.setText(name);
         mEditTextPhone.setText(phone);
         mEditTextTel.setText(tel);
         mEditTextEmail.setText(email);
         mEditTextAddress.setText(address);
-
+        mEditTextImgurl.setText(imgurl);
 
         Button buttonInsert = (Button)findViewById(R.id.button_main_insert);
         buttonInsert.setOnClickListener(new View.OnClickListener() {
@@ -87,9 +90,9 @@ public class add extends AppCompatActivity {
                 String tel = mEditTextTel.getText().toString();
                 String email = mEditTextEmail.getText().toString();
                 String address = mEditTextAddress.getText().toString();
-
+                String imgurl = mEditTextImgurl.getText().toString();
                 InsertData task = new InsertData();
-                task.execute(company,name,phone,tel,email,address);
+                task.execute(user_id,company,name,phone,tel,email,address,imgurl);
 
                 mEditTextCompany.setText("");
                 mEditTextName.setText("");
@@ -97,6 +100,7 @@ public class add extends AppCompatActivity {
                 mEditTextTel.setText("");
                 mEditTextEmail.setText("");
                 mEditTextAddress.setText("");
+                mEditTextImgurl.setText("");
 
             }
         });
@@ -116,10 +120,25 @@ public class add extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.done){
-            Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
-            Intent intent = getIntent();
-            setResult(1, intent);
-            finish();
+            String company = mEditTextCompany.getText().toString();
+            String name = mEditTextName.getText().toString();
+            String phone = mEditTextPhone.getText().toString();
+            String tel = mEditTextTel.getText().toString();
+            String email = mEditTextEmail.getText().toString();
+            String address = mEditTextAddress.getText().toString();
+            String imgurl = mEditTextImgurl.getText().toString();
+            InsertData task = new InsertData();
+            task.execute(user_id,company,name,phone,tel,email,address,imgurl);
+
+            mEditTextCompany.setText("");
+            mEditTextName.setText("");
+            mEditTextPhone.setText("");
+            mEditTextTel.setText("");
+            mEditTextEmail.setText("");
+            mEditTextAddress.setText("");
+            mEditTextImgurl.setText("");
+
+
         }
         else if( id == R.id.cancel) {
             Intent intent = getIntent();
@@ -147,26 +166,36 @@ public class add extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
+            Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            Bundle bundle = new Bundle();
+            bundle.putString("user_id", user_id);;
+            Fragment3 fragment3 = new Fragment3();
+            fragment3.setArguments(bundle);
+
+           /* transaction.replace(a, fragment3);*/
+            transaction.commit();
             progressDialog.dismiss();
-            mTextViewResult.setText(result);
             Log.d(TAG, "POST response  - " + result);
         }
 
 
         @Override
         protected String doInBackground(String... params) {
-
-            String company = (String)params[0];
-            String name = (String)params[1];
-            String phone = (String)params[2];
-            String tel = (String)params[3];
-            String email = (String)params[4];
-            String address = (String)params[5];
-            Log.v("add 에서의 태그값은 :", android_num);
+            String id = (String)params[0];
+            String company = (String)params[1];
+            String name = (String)params[2];
+            String phone = (String)params[3];
+            String tel = (String)params[4];
+            String email = (String)params[5];
+            String address = (String)params[6];
+            String imgurl = (String)params[7];
+            Log.v("add 에서의 태그값은 :", name);
 
             String serverURL = "http://192.168.1.102/bcm/insert.php";
   
-            String postParameters = "android_num=" + android_num +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address;
+            String postParameters = "id="+id+"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&imgurl=" + imgurl;
 
 
             try {

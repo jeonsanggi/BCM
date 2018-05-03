@@ -40,10 +40,15 @@ public class Fragment1 extends Fragment {
     private static String TAG = "phptest_MainActivity";
 
     private static final String TAG_JSON="webnautes";
-    private static final String TAG_ID = "id";
+    private static final String TAG_SEQ = "seq";
+    private static final String TAG_COMPANY = "company";
     private static final String TAG_NAME = "name";
+    private static final String TAG_PHONE = "phone";
+    private static final String TAG_TEL = "tel";
+    private static final String TAG_EMAIL = "email";
     private static final String TAG_ADDRESS ="address";
-
+    private static final String TAG_IMGURL = "imgurl";
+    private String user_id;
     private TextView mTextViewResult;
     ArrayList<HashMap<String, String>> mArrayList;
     ListView mlistView;
@@ -62,35 +67,11 @@ public class Fragment1 extends Fragment {
         ct = inflater.getContext();
         GetData task = new GetData();
 
-        task.execute("http://192.168.1.102/bcm/getjson.php");
-
-
-      //  Button bt = (Button) view.findViewById(R.id.bt_add);
-
-     /*   bt.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                callFragment(INSERT_FRAG);
-            }
-        });*/
+        task.execute("http://192.168.1.102/bcm/getBCList.php");
 
         return view;
     }
-   /* private void callFragment(int frament_no) {
 
-        // 프래그먼트 사용을 위해
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        switch (frament_no) {
-            case 1:
-                // '프래그먼트1' 호출
-                Insert_frag insert_frag = new Insert_frag();
-                transaction.replace(R.id.fragment_container, insert_frag);
-                transaction.commit();
-                break;
-        }
-
-    }*/
     private class GetData extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String errorString = null;
@@ -127,9 +108,9 @@ public class Fragment1 extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             Bundle extra = getArguments();
-            String android_num = extra.getString("android_num");
+            user_id = extra.getString("user_id");
             String serverURL = params[0];
-            String postParameters = "android_num=" + android_num;
+            String postParameters = "id=" + user_id;
 
 
             try {
@@ -199,23 +180,33 @@ public class Fragment1 extends Fragment {
 
                 JSONObject item = jsonArray.getJSONObject(i);
 
-                String id = item.getString(TAG_ID);
+                String seq = item.getString(TAG_SEQ);
+                String company = item.getString(TAG_COMPANY);
                 String name = item.getString(TAG_NAME);
+                String phone = item.getString(TAG_PHONE);
+                String tel = item.getString(TAG_TEL);
+                String email = item.getString(TAG_EMAIL);
                 String address = item.getString(TAG_ADDRESS);
+                String imgurl = item.getString(TAG_IMGURL);
 
                 HashMap<String,String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_ID, id);
+                hashMap.put(TAG_SEQ, seq);
+                hashMap.put(TAG_COMPANY, company);
                 hashMap.put(TAG_NAME, name);
-                hashMap.put(TAG_ADDRESS, address);
+                hashMap.put(TAG_PHONE, phone);
+                hashMap.put(TAG_TEL, tel);
+                hashMap.put(TAG_EMAIL, email);
+                hashMap.put(TAG_ADDRESS, address);;
+                hashMap.put(TAG_IMGURL, imgurl);
 
                 mArrayList.add(hashMap);
             }
 
             ListAdapter adapter = new SimpleAdapter(
                     ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_ID, TAG_NAME, TAG_ADDRESS},
-                    new int[]{R.id.textView_list_id, R.id.textView_list_name, R.id.textView_list_address}
+                    new String[]{TAG_SEQ, TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS, TAG_IMGURL},
+                    new int[]{R.id.textView_list_seq, R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address, R.id.textView_list_imgurl}
             );
 
             mlistView.setAdapter(adapter);

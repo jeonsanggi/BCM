@@ -86,17 +86,16 @@ public class Login extends AppCompatActivity{
 
             Login.GetData task = new Login.GetData();
             task.execute(user_id, user_pw);
-        }else{
-            Button buttonInsert = (Button) findViewById(R.id.button_main_login);
-            buttonInsert.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    user_id = User_ID.getText().toString();
-                    user_pw = User_PW.getText().toString();
+        }
+        Button buttonInsert = (Button) findViewById(R.id.button_main_login);
+        buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user_id = User_ID.getText().toString();
+                user_pw = User_PW.getText().toString();
 
-                    Login.GetData task = new Login.GetData();
-                    task.execute(user_id, user_pw);
-
+                Login.GetData task = new Login.GetData();
+                task.execute(user_id, user_pw);
             }
         });
         Button buttonsignup = (Button)findViewById(R.id.button_main_sign_up);
@@ -106,8 +105,8 @@ public class Login extends AppCompatActivity{
                 startActivity(intent);
                 finish();
                 }
-            });
-        }
+        });
+
 
         autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -242,6 +241,7 @@ public class Login extends AppCompatActivity{
             switch (check){
                 case "success":
                     Intent intent = new Intent(Login.this,MainActivity.class);
+                    intent.putExtra("user_id",user_id);
                     startActivity(intent);
                     finish();
                     break;
