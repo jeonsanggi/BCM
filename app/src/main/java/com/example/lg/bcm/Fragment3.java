@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.example.lg.bcm.R;
 
@@ -38,8 +39,6 @@ import java.util.HashMap;
 public class Fragment3 extends Fragment {
     //
     private static String TAG = "phptest_MainActivity";
-
-
     private static final String TAG_JSON="webnautes";
     private static final String TAG_ID = "id";
     private static final String TAG_COMPANY = "company";
@@ -50,6 +49,16 @@ public class Fragment3 extends Fragment {
     private static final String TAG_ADDRESS ="address";
     private static final String TAG_IMGURL="imgurl";
     private String user_id;
+    private TextView mTextcompany;
+    private TextView mTextname;
+    private TextView mTextphone;
+    private TextView mTexttel;
+    private TextView mTextemail;
+    private TextView mTextaddress;
+    private TextView mTextImgurl;
+
+
+
     String company;
     String name;
     String phone;
@@ -57,9 +66,8 @@ public class Fragment3 extends Fragment {
     String email;
     String address;
     String imgurl;
-    //private TextView mTextViewResult;
-    ArrayList<HashMap<String, String>> mArrayList;
-    ListView mlistView;
+
+
     String mJsonString;
     //
     Context ct;
@@ -71,13 +79,20 @@ public class Fragment3 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view =  (View) inflater.inflate(R.layout.fragment_fragment3, container, false);
         setHasOptionsMenu(true);
-        mlistView = (ListView) view.findViewById(R.id.listView_main_list);
-        mArrayList = new ArrayList<>();
+
+        mTextcompany = (TextView)view.findViewById(R.id.textView_list_company);
+        mTextname = (TextView)view.findViewById(R.id.textView_list_name);
+        mTextphone = (TextView)view.findViewById(R.id.textView_list_phone);
+        mTexttel = (TextView)view.findViewById(R.id.textView_list_tel);
+        mTextemail = (TextView)view.findViewById(R.id.textView_list_email);
+        mTextaddress = (TextView)view.findViewById(R.id.textView_list_address);
+
+
+
         ct = inflater.getContext();
+
         Fragment3.GetData task = new Fragment3.GetData();
-
-        task.execute("http://192.168.1.102/bcm/getMyInfo.php");
-
+        task.execute("http://192.168.1.150/getMyInfo.php");
 
         return view;
     }
@@ -95,6 +110,7 @@ public class Fragment3 extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id =  item.getItemId();
 
+        //편집 button을 눌렀을 경우 화면 전환 및 개인 정보 전달
         if (id == R.id.mEdit){
                 Intent intent = new Intent(getActivity(),add.class);
                 intent.putExtra("user_id",user_id);
@@ -107,7 +123,9 @@ public class Fragment3 extends Fragment {
                 intent.putExtra("imgurl",imgurl);
                 startActivityForResult(intent, 1);
 
-        }else if (id == R.id.LogOut){
+        }
+        //로그아웃 butoon을 눌렀을 경우 로그인 페이지로 전환
+        else if (id == R.id.LogOut){
             Intent intent = new Intent(getActivity(),Login.class);
             startActivityForResult(intent, 1);
         }
@@ -135,13 +153,10 @@ public class Fragment3 extends Fragment {
             progressDialog.dismiss();
             //mTextViewResult.setText(result);
             Log.d(TAG, "response  - " + result);
-
             if (result == null){
-
               //  mTextViewResult.setText(errorString);
             }
             else {
-
                 mJsonString = result;
                 showResult();
             }
@@ -149,24 +164,23 @@ public class Fragment3 extends Fragment {
 
 
         @Override
+        //http 통신 및 해당 id에대한 정보를 가져옴
         protected String doInBackground(String... params) {
             Bundle extra = getArguments();
             user_id = extra.getString("user_id");
             String serverURL = params[0];
             String postParameters = "id=" + user_id;
 
+            //id에 대한 정보들을 DB에서 가져옴
             try {
-
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
 
                 httpURLConnection.setReadTimeout(5000);
                 httpURLConnection.setConnectTimeout(5000);
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoInput(true);
                 httpURLConnection.connect();
-
 
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 outputStream.write(postParameters.getBytes("UTF-8"));
@@ -184,7 +198,6 @@ public class Fragment3 extends Fragment {
                     inputStream = httpURLConnection.getErrorStream();
                 }
 
-
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -196,22 +209,16 @@ public class Fragment3 extends Fragment {
                 }
 
                 bufferedReader.close();
-
-
                 return sb.toString().trim();
-
-
-            } catch (Exception e) {
-
+            }
+            catch (Exception e) {
                 Log.d(TAG, "InsertData: Error ", e);
                 errorString = e.toString();
 
                 return null;
             }
-
         }
     }
-
 
     private void showResult(){
         try {
@@ -219,9 +226,7 @@ public class Fragment3 extends Fragment {
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
             for(int i=0;i<jsonArray.length();i++){
-
                 JSONObject item = jsonArray.getJSONObject(i);
-
 
                 company = item.getString(TAG_COMPANY);
                 name = item.getString(TAG_NAME);
@@ -230,29 +235,18 @@ public class Fragment3 extends Fragment {
                 email = item.getString(TAG_EMAIL);
                 address = item.getString(TAG_ADDRESS);
                 imgurl = item.getString(TAG_IMGURL);
-                HashMap<String,String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_COMPANY, company);
-                hashMap.put(TAG_NAME, name);
-                hashMap.put(TAG_PHONE, phone);
-                hashMap.put(TAG_TEL, tel);
-                hashMap.put(TAG_EMAIL, email);
-                hashMap.put(TAG_ADDRESS, address);
-                hashMap.put(TAG_IMGURL, imgurl);
-
-                mArrayList.add(hashMap);
             }
 
-            ListAdapter adapter = new SimpleAdapter(
-                    ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS, TAG_IMGURL},
-                    new int[]{ R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address}
-            );
+            mTextcompany.setText(company);
+            mTextname.setText(name);
+            mTextphone.setText(phone);
+            mTexttel.setText(tel);
+            mTextemail.setText(email);
+            mTextaddress.setText(address);
 
-            mlistView.setAdapter(adapter);
 
         } catch (JSONException e) {
-
             Log.d(TAG, "showResult : ", e);
         }
 

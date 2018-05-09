@@ -119,6 +119,7 @@ public class add extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
 
+        //저장 button 클릭시 수정한 정보들을 전송
         if(id == R.id.done){
             String company = mEditTextCompany.getText().toString();
             String name = mEditTextName.getText().toString();
@@ -127,19 +128,12 @@ public class add extends AppCompatActivity {
             String email = mEditTextEmail.getText().toString();
             String address = mEditTextAddress.getText().toString();
             String imgurl = mEditTextImgurl.getText().toString();
+
+
             InsertData task = new InsertData();
             task.execute(user_id,company,name,phone,tel,email,address,imgurl);
-
-            mEditTextCompany.setText("");
-            mEditTextName.setText("");
-            mEditTextPhone.setText("");
-            mEditTextTel.setText("");
-            mEditTextEmail.setText("");
-            mEditTextAddress.setText("");
-            mEditTextImgurl.setText("");
-
-
         }
+        //취소 button 클릭시 이전 화면으로 전환
         else if( id == R.id.cancel) {
             Intent intent = getIntent();
             setResult(0, intent);
@@ -161,27 +155,29 @@ public class add extends AppCompatActivity {
                     "Please Wait", null, true, true);
         }
 
-
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
 
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            /*Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
+            Intent intent = getIntent();
+            setResult(0, intent);
+            finish();*/
+            /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             Bundle bundle = new Bundle();
             bundle.putString("user_id", user_id);;
             Fragment3 fragment3 = new Fragment3();
             fragment3.setArguments(bundle);
 
-           /* transaction.replace(a, fragment3);*/
-            transaction.commit();
+            transaction.replace(R.id.fragment_container, fragment3);
+            transaction.commit();*/
             progressDialog.dismiss();
             Log.d(TAG, "POST response  - " + result);
         }
 
-
         @Override
+        //수정한 정보들을 서버로 전송
         protected String doInBackground(String... params) {
             String id = (String)params[0];
             String company = (String)params[1];
@@ -191,18 +187,12 @@ public class add extends AppCompatActivity {
             String email = (String)params[5];
             String address = (String)params[6];
             String imgurl = (String)params[7];
-            Log.v("add 에서의 태그값은 :", name);
-
-            String serverURL = "http://192.168.1.102/bcm/insert.php";
-  
+            String serverURL = "http://192.168.1.150/insert.php";
             String postParameters = "id="+id+"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&imgurl=" + imgurl;
 
-
             try {
-
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
 
                 httpURLConnection.setReadTimeout(5000);
                 httpURLConnection.setConnectTimeout(5000);
@@ -210,12 +200,10 @@ public class add extends AppCompatActivity {
                 httpURLConnection.setDoInput(true);
                 httpURLConnection.connect();
 
-
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 outputStream.write(postParameters.getBytes("UTF-8"));
                 outputStream.flush();
                 outputStream.close();
-
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
                 Log.d(TAG, "POST response code - " + responseStatusCode);
@@ -228,7 +216,6 @@ public class add extends AppCompatActivity {
                     inputStream = httpURLConnection.getErrorStream();
                 }
 
-
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -239,20 +226,14 @@ public class add extends AppCompatActivity {
                     sb.append(line);
                 }
 
-
                 bufferedReader.close();
-
-
                 return sb.toString();
-
 
             } catch (Exception e) {
 
                 Log.d(TAG, "InsertData: Error ", e);
-
                 return new String("Error: " + e.getMessage());
             }
-
         }
     }
 }
