@@ -1,11 +1,17 @@
 package com.example.lg.bcm;
 
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +20,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lg.bcm.R;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -24,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -32,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final int FRAGMENT1 =1;
     private final int FRAGMENT2 =2;
     private final int FRAGMENT3 =3;
+    public static final String ERROR_DETECTED = "No NFC tag detected!";
+    public static final String WRITE_SUCCESS = "Text written to the NFC tag successfully!";
+    public static final String WRITE_ERROR = "Error during writing, is the NFC tag close enough to your device?";
 
 
     private Button bt_tab1, bt_tab2, bt_tab3;
@@ -43,10 +55,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String datapath="";
     private String ocrresult;
     private String user_id;
+
+    NfcAdapter nfcAdapter;
+    PendingIntent pendingIntent;
+    IntentFilter writeTagFilters[];
+    boolean writeMode;
+    Tag myTag;
+    Context context;
+
+    TextView tvNFCContent;
+    TextView message;
+    Button btnWrite;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this;
 
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
@@ -77,7 +103,108 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             sTess.init(datapath, language);
         }
 
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter == null) {
+            // Stop here, we definitely need NFC
+            Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        readFromIntent(getIntent());
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
+
+
     }
+
+    private void readFromIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage[] msgs = null;
+            if (rawMsgs != null) {
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                }
+            }
+            buildTagViews(msgs);
+        }
+    }
+    private void buildTagViews(NdefMessage[] msgs) {
+        if (msgs == null || msgs.length == 0) return;
+
+        String text = "";
+//        String tagId = new String(msgs[0].getRecords()[0].getType());
+        byte[] payload = msgs[0].getRecords()[0].getPayload();
+        String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16"; // Get the Text Encoding
+        int languageCodeLength = payload[0] & 0063; // Get the Language Code, e.g. "en"
+        // String languageCode = new String(payload, 1, languageCodeLength, "US-ASCII");
+
+        try {
+            // Get the Text
+            text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
+        } catch (UnsupportedEncodingException e) {
+            Log.e("UnsupportedEncoding", e.toString());
+        }
+
+        String[] array = text.split("\n");
+
+        String company = array[1];
+        String name = array[2];
+        String phone = array[3];
+        String tel = array[4];
+        String email = array[5];
+        String address = array[6];
+        String imgurl = array[7];
+
+
+        Intent intent = new Intent(MainActivity.this,add.class);
+
+        intent.putExtra("user_id",user_id);
+        intent.putExtra("company", company);
+        intent.putExtra("name", name);
+        intent.putExtra("phone", phone);
+        intent.putExtra("tel", tel);
+        intent.putExtra("email", email);
+        intent.putExtra("address", address);
+        intent.putExtra("imgurl",imgurl);
+        startActivityForResult(intent, 1);
+    }
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        readFromIntent(intent);
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
+    }
+    public void onPause(){
+        super.onPause();
+        WriteModeOff();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        WriteModeOn();
+    }
+
+    private void WriteModeOn(){
+        writeMode = true;
+        nfcAdapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
+    }
+    /******************************************************************************
+     **********************************Disable Write*******************************
+     ******************************************************************************/
+    private void WriteModeOff(){
+        writeMode = false;
+        nfcAdapter.disableForegroundDispatch(this);
+    }
+
 
     boolean checkFile(File dir)
     {

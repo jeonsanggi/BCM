@@ -15,14 +15,12 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ID"
         android:id="@+id/editText_login_id" />
 
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Password"
         android:id="@+id/editText_login_pw" />
 
         <LinearLayout

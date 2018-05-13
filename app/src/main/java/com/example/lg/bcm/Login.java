@@ -76,6 +76,8 @@ public class Login extends AppCompatActivity{
         pref = getSharedPreferences("pref", 0);
         editor = pref.edit();
 
+
+        //자동로그인을 위한 버튼이 check 되어있는지 확인
         if(pref.getBoolean("auto_Login_enabled",false)){
             User_ID.setText(pref.getString("ID",""));
             User_PW.setText(pref.getString("PW",""));
@@ -87,6 +89,7 @@ public class Login extends AppCompatActivity{
             Login.GetData task = new Login.GetData();
             task.execute(user_id, user_pw);
         }
+        //button 클릭시 로그인 요청
         Button buttonInsert = (Button) findViewById(R.id.button_main_login);
         buttonInsert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +101,7 @@ public class Login extends AppCompatActivity{
                 task.execute(user_id, user_pw);
             }
         });
+        //button 클릭시 회원가입으로 전환
         Button buttonsignup = (Button)findViewById(R.id.button_main_sign_up);
         buttonsignup.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -106,8 +110,7 @@ public class Login extends AppCompatActivity{
                 finish();
                 }
         });
-
-
+        //자동로그인을 위한 Listener
         autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -119,7 +122,6 @@ public class Login extends AppCompatActivity{
                     editor.putString("PW", PW);
                     editor.putBoolean("auto_Login_enabled", true);
                     editor.commit();
-
                 }else{
                     editor.remove("ID");
                     editor.remove("PW");
@@ -158,25 +160,21 @@ public class Login extends AppCompatActivity{
             }
             else{
                 mJsonString =result;
-                check_login();
+                check_login();  //입력 id, pw와 DB 정보와 비교한 값을 확인
             }
         }
 
-
         @Override
+        //http 통신으로 입력 id, password 전송
         protected String doInBackground(String... params) {
-
             String user_id = (String)params[0];
             String user_pw = (String)params[1];
-            String serverURL = "http://192.168.1.102/bcm/login.php";
+            String serverURL = "http://192.168.1.150/login.php";
             String postParameters = "id=" + user_id + "&password=" + user_pw;
 
-            Log.v("왜 안되는것일까", user_id);
             try {
-
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
 
                 httpURLConnection.setReadTimeout(5000);
                 httpURLConnection.setConnectTimeout(5000);
@@ -189,7 +187,6 @@ public class Login extends AppCompatActivity{
                 outputStream.flush();
                 outputStream.close();
 
-
                 int responseStatusCode = httpURLConnection.getResponseCode();
                 Log.d(TAG, "response code - " + responseStatusCode);
 
@@ -201,7 +198,6 @@ public class Login extends AppCompatActivity{
                     inputStream = httpURLConnection.getErrorStream();
                 }
 
-
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -211,15 +207,10 @@ public class Login extends AppCompatActivity{
                 while((line = bufferedReader.readLine()) != null){
                     sb.append(line);
                 }
-
-
                 bufferedReader.close();
                 Log.d(TAG,sb.toString().trim());
                 return sb.toString().trim();
-
-
             } catch (Exception e) {
-
                 Log.d(TAG, "InsertData: Error ", e);
                 errorString = e.toString();
 
@@ -234,10 +225,9 @@ public class Login extends AppCompatActivity{
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
-
             JSONObject item = jsonArray.getJSONObject(0);
-
             String check = item.getString(TAG_CHECK);
+
             switch (check){
                 case "success":
                     Intent intent = new Intent(Login.this,MainActivity.class);
@@ -254,7 +244,6 @@ public class Login extends AppCompatActivity{
                     break;
             }
         } catch (JSONException e) {
-
             Log.d(TAG, "showResult : ", e);
         }
 
