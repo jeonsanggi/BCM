@@ -12,4 +12,9 @@
         android:title = "로그아웃"
         app:showAsAction = "never"/>
 
+    <!--<item
+        android:id="@+id/button_nfc_write"
+        android:title = "NFC 내보내기"
+        app:showAsAction = "never"/>-->
+
 </menu>
