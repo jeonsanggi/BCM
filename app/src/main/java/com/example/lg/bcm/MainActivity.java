@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
-
+        String from_add = intent.getStringExtra("to_main");
         bt_tab1 = (Button)findViewById(R.id.bt_tab1);
         bt_tab2 = (Button)findViewById(R.id.bt_tab2);
         bt_tab3 = (Button)findViewById(R.id.bt_tab3);
@@ -63,7 +63,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         // 임의로 액티비티 호출 시점에 어느 프레그먼트를 프레임레이아웃에 띄울 것인지를 정함
-        callFragment(FRAGMENT1);
+        if(from_add!=null&&from_add.equals("add")){
+            callFragment(FRAGMENT3);
+        }else {
+            callFragment(FRAGMENT1);
+        }
         sTess = new TessBaseAPI();
 
         language = "eng";
@@ -134,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // '버튼2' 클릭 시 '프래그먼트2' 호출
                 //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent intent = new Intent(MainActivity.this, CameraView.class);
+                intent.putExtra("user_id",user_id);
                 startActivityForResult(intent,2);
 
                 break;

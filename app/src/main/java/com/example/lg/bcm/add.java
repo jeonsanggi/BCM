@@ -2,6 +2,8 @@ package com.example.lg.bcm;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +43,7 @@ public class add extends AppCompatActivity {
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
     private TextView mEditTextImgurl;
+    private ImageView imgview;
     String user_id;
     String company;
     String name;
@@ -47,13 +51,15 @@ public class add extends AppCompatActivity {
     String tel;
     String email;
     String address;
-    String imgurl;
+    String check;
+    Bitmap bitmap;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.insert);
 
 
         Intent intent = getIntent();
+        check = intent.getStringExtra("check");
         user_id = intent.getStringExtra("user_id");
         company = intent.getStringExtra("company");
         name = intent.getStringExtra("name");
@@ -61,7 +67,10 @@ public class add extends AppCompatActivity {
         tel = intent.getStringExtra("tel");
         email = intent.getStringExtra("email");
         address = intent.getStringExtra("address");
-        imgurl = intent.getStringExtra("imgurl");
+        if(intent.hasExtra("img")){
+            bitmap = BitmapFactory.decodeByteArray(intent.getByteArrayExtra("img"),0,intent.getByteArrayExtra("img").length);
+        }
+
 
         mEditTextCompany = (EditText)findViewById(R.id.editText_main_company);
         mEditTextName = (EditText)findViewById(R.id.editText_main_name);
@@ -69,7 +78,7 @@ public class add extends AppCompatActivity {
         mEditTextTel = (EditText)findViewById(R.id.editText_main_tel);
         mEditTextEmail = (EditText)findViewById(R.id.editText_main_email);
         mEditTextAddress = (EditText)findViewById(R.id.editText_main_address);
-        mEditTextImgurl = (TextView)findViewById(R.id.textView_main_imgurl);
+        imgview = (ImageView)findViewById(R.id.imgView);
 
         mEditTextCompany.setText(company);
         mEditTextName.setText(name);
@@ -77,7 +86,8 @@ public class add extends AppCompatActivity {
         mEditTextTel.setText(tel);
         mEditTextEmail.setText(email);
         mEditTextAddress.setText(address);
-        mEditTextImgurl.setText(imgurl);
+        imgview.setVisibility(View.VISIBLE);
+        imgview.setImageBitmap(bitmap);
 
         Button buttonInsert = (Button)findViewById(R.id.button_main_insert);
         buttonInsert.setOnClickListener(new View.OnClickListener() {
@@ -130,15 +140,6 @@ public class add extends AppCompatActivity {
             InsertData task = new InsertData();
             task.execute(user_id,company,name,phone,tel,email,address,imgurl);
 
-            mEditTextCompany.setText("");
-            mEditTextName.setText("");
-            mEditTextPhone.setText("");
-            mEditTextTel.setText("");
-            mEditTextEmail.setText("");
-            mEditTextAddress.setText("");
-            mEditTextImgurl.setText("");
-
-
         }
         else if( id == R.id.cancel) {
             Intent intent = getIntent();
@@ -167,22 +168,20 @@ public class add extends AppCompatActivity {
             super.onPostExecute(result);
 
             Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
-
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            Bundle bundle = new Bundle();
-            bundle.putString("user_id", user_id);;
-            Fragment3 fragment3 = new Fragment3();
-            fragment3.setArguments(bundle);
-
-           /* transaction.replace(a, fragment3);*/
-            transaction.commit();
             progressDialog.dismiss();
+            Intent intent = new Intent(add.this, MainActivity.class);
+            intent.putExtra("user_id",user_id);
+            intent.putExtra("to_main","add");
+            startActivity(intent);
+            finish();
+
             Log.d(TAG, "POST response  - " + result);
         }
 
 
         @Override
         protected String doInBackground(String... params) {
+            String serverURL="";
             String id = (String)params[0];
             String company = (String)params[1];
             String name = (String)params[2];
@@ -192,11 +191,14 @@ public class add extends AppCompatActivity {
             String address = (String)params[6];
             String imgurl = (String)params[7];
             Log.v("add 에서의 태그값은 :", name);
+            if(check.equals("list")){
+                serverURL = "http://192.168.1.102/bcm/insert.php";
+            }else if(check.equals("mypage")){
+                serverURL = "http://192.168.1.102/bcm/update.php";
+            }
 
-            String serverURL = "http://192.168.1.102/bcm/insert.php";
   
             String postParameters = "id="+id+"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&imgurl=" + imgurl;
-
 
             try {
 
