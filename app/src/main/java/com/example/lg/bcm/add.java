@@ -48,12 +48,15 @@ public class add extends AppCompatActivity {
     String email;
     String address;
     String imgurl;
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.insert);
 
 
         Intent intent = getIntent();
+
         user_id = intent.getStringExtra("user_id");
         company = intent.getStringExtra("company");
         name = intent.getStringExtra("name");
@@ -62,6 +65,8 @@ public class add extends AppCompatActivity {
         email = intent.getStringExtra("email");
         address = intent.getStringExtra("address");
         imgurl = intent.getStringExtra("imgurl");
+
+
 
         mEditTextCompany = (EditText)findViewById(R.id.editText_main_company);
         mEditTextName = (EditText)findViewById(R.id.editText_main_name);
@@ -188,8 +193,9 @@ public class add extends AppCompatActivity {
             String address = (String)params[6];
             String imgurl = (String)params[7];
             String serverURL = "http://192.168.1.150/insert.php";
-            String postParameters = "id="+id+"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&imgurl=" + imgurl;
 
+
+            String postParameters = "id="+id+"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&imgurl=" + imgurl;
             try {
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();

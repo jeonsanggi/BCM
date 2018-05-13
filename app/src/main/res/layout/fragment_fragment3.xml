@@ -76,6 +76,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/button_nfc_write"
         android:text="NFC로 내보내기"/>
 
 </LinearLayout>

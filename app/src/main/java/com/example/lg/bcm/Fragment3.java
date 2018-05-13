@@ -3,6 +3,7 @@ package com.example.lg.bcm;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -57,8 +59,6 @@ public class Fragment3 extends Fragment {
     private TextView mTextaddress;
     private TextView mTextImgurl;
 
-
-
     String company;
     String name;
     String phone;
@@ -66,10 +66,7 @@ public class Fragment3 extends Fragment {
     String email;
     String address;
     String imgurl;
-
-
     String mJsonString;
-    //
     Context ct;
 
     public Fragment3( ){
@@ -87,12 +84,24 @@ public class Fragment3 extends Fragment {
         mTextemail = (TextView)view.findViewById(R.id.textView_list_email);
         mTextaddress = (TextView)view.findViewById(R.id.textView_list_address);
 
-
-
         ct = inflater.getContext();
 
         Fragment3.GetData task = new Fragment3.GetData();
         task.execute("http://192.168.1.150/getMyInfo.php");
+
+        Button buttonInsert = (Button)view.findViewById(R.id.button_nfc_write);
+        buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),Nfc_Write.class);
+                String Parameters = user_id +"\n" + company + "\n" + name + "\n" + phone + "\n" + tel +"\n" + email + "\n" + address+"\n" + imgurl;
+
+                intent.putExtra("Parameters", Parameters);
+                startActivityForResult(intent, 1);
+
+            }
+        });
+
 
         return view;
     }
@@ -129,6 +138,7 @@ public class Fragment3 extends Fragment {
             Intent intent = new Intent(getActivity(),Login.class);
             startActivityForResult(intent, 1);
         }
+
         return super.onOptionsItemSelected(item);
     }
 
