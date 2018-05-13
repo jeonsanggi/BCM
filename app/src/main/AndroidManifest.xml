@@ -37,6 +37,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+
+
+
+
+
         <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,7 +63,9 @@
             android:name=".CameraView"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+             />
+
         <activity android:name=".Login">
         </activity>
         <activity android:name=".SignUp">

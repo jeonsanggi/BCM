@@ -1,9 +1,11 @@
 package com.example.lg.bcm;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.hardware.SensorManager;
@@ -35,6 +37,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
+
 import static com.example.lg.bcm.MainActivity.sTess;
 
 
@@ -54,12 +58,14 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     private OrientationEventListener mOrientEventListener;
 
     private Rect mRectRoi;
-
+    private Rect all;
     private SurfaceView mSurfaceRoi;
     private SurfaceView mSurfaceRoiBorder;
 
     private int mRoiWidth;
     private int mRoiHeight;
+    private int mimgWidth;
+    private int mimgHeight;
     private int mRoiX;
     private int mRoiY;
     private double m_dWscale;
@@ -70,8 +76,10 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     private android.widget.RelativeLayout.LayoutParams mRelativeParams;
     private ImageView mImageCapture;
     private Mat m_matRoi;
+    private Mat allm;
     private boolean mStartFlag = false;
 
+    private String user_id;
     // 현재 회전 상태 (하단 Home 버튼의 위치)
     private enum mOrientHomeButton {Right, Bottom, Left, Top}
 
@@ -151,6 +159,8 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        Intent intent = getIntent();
+        user_id = intent.getStringExtra("user_id");
         if (!hasPermissions(PERMISSIONS)) { //퍼미션 허가를 했었는지 여부를 확인
             requestNecessaryPermissions(PERMISSIONS);//퍼미션 허가안되어 있다면 사용자에게 요청
         } else {
@@ -169,12 +179,12 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         mBtnOcrStart = (Button) findViewById(R.id.btn_ocrstart);
         mBtnFinish = (Button) findViewById(R.id.btn_finish);
 
-        mTextOcrResult = (TextView) findViewById(R.id.text_ocrresult);
+       // mTextOcrResult = (TextView) findViewById(R.id.text_ocrresult);
 
         mSurfaceRoi = (SurfaceView) findViewById(R.id.surface_roi);
         mSurfaceRoiBorder = (SurfaceView) findViewById(R.id.surface_roi_border);
 
-        mImageCapture = (ImageView) findViewById(R.id.image_capture);
+       mImageCapture = (ImageView) findViewById(R.id.image_capture);
 
         //풀스크린 상태 만들기 (상태바, 네비게이션바 없애고 고정시키기)
         m_viewDeco = getWindow().getDecorView();
@@ -217,7 +227,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
 
                 //ROI 선 조정
-                mRelativeParams = new android.widget.RelativeLayout.LayoutParams(mRoiWidth , mRoiHeight );
+                mRelativeParams = new android.widget.RelativeLayout.LayoutParams(mRoiWidth + 5, mRoiHeight + 5);
                 mRelativeParams.setMargins(mRoiX, mRoiY, 0, 0);
                 mSurfaceRoiBorder.setLayoutParams(mRelativeParams);
 
@@ -259,7 +269,9 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                     Utils.matToBitmap(m_matRoi, bmp_result);
 
                     // 캡쳐한 이미지를 ROI 영역 안에 표시
+                    //mRelativeParams = new android.widget.RelativeLayout.LayoutParams((int)img_input.size().width-100,(int)img_input.size().height);
                     mImageCapture.setVisibility(View.VISIBLE);
+                    //mImageCapture.setLayoutParams(mRelativeParams);
                     mImageCapture.setImageBitmap(bmp_result);
 
 
@@ -283,8 +295,8 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                     //Retry를 눌렀을 경우
 
                     // ImageView에서 사용한 캡쳐이미지 제거
-                    mImageCapture.setImageBitmap(null);
-                    mTextOcrResult.setText(R.string.ocr_result_tip);
+                   /* mImageCapture.setImageBitmap(null);
+                    mTextOcrResult.setText(R.string.ocr_result_tip);*/
 
                     mBtnOcrStart.setEnabled(true);
                     mBtnOcrStart.setText("Start");
@@ -301,7 +313,6 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                 //인식 결과물을 MainActivity에 전달하고 종료
                 Intent intent = getIntent();
                 intent.putExtra("STRING_OCR_RESULT", m_strOcrResult);
-                intent.putExtra("STRING_IMG_RESULT", bmp_result);
                 setResult(RESULT_OK, intent);
                 mOpenCvCameraView.disableView();
                 finish();
@@ -312,7 +323,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     public void rotateViews(int degree) {
         mBtnOcrStart.setRotation(degree);
         mBtnFinish.setRotation(degree);
-        mTextOcrResult.setRotation(degree);
+        /*mTextOcrResult.setRotation(degree);*/
 
         switch (degree) {
             // 가로
@@ -325,27 +336,27 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
 
                 //결과 TextView 위치 조정
-                mRelativeParams = new android.widget.RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                /*mRelativeParams = new android.widget.RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 mRelativeParams.setMargins(0, convertDpToPixel(20), 0, 0);
                 mRelativeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                mTextOcrResult.setLayoutParams(mRelativeParams);
+                mTextOcrResult.setLayoutParams(mRelativeParams);*/
 
                 break;
 
             // 세로
-            case 90:
+           /* case 90:
             case 270:
 
-                m_dWscale = (double) 1 / 4;    //h (반대)
-                m_dHscale = (double) 3 / 4;    //w
+                m_dWscale = (double)1 / 2 ;
+                m_dHscale = (double)1 / 2;*/
 
-                mRelativeParams = new android.widget.RelativeLayout.LayoutParams(convertDpToPixel(300), ViewGroup.LayoutParams.WRAP_CONTENT);
+          /*      mRelativeParams = new android.widget.RelativeLayout.LayoutParams(convertDpToPixel(300), ViewGroup.LayoutParams.WRAP_CONTENT);
                 mRelativeParams.setMargins(convertDpToPixel(15), 0, 0, 0);
                 mRelativeParams.addRule(RelativeLayout.CENTER_VERTICAL);
-                mTextOcrResult.setLayoutParams(mRelativeParams);
+                mTextOcrResult.setLayoutParams(mRelativeParams);*/
 
-
-                break;
+/*
+                break;*/
         }
     }
 
@@ -353,7 +364,6 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     public int convertDpToPixel(float dp) {
 
         Resources resources = getApplicationContext().getResources();
-
 
         DisplayMetrics metrics = resources.getDisplayMetrics();
 
@@ -424,7 +434,6 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         // 프레임 획득
         img_input = inputFrame.rgba();
 
-
         // 가로, 세로 사이즈 획득
         mRoiWidth = (int) (img_input.size().width * m_dWscale);
         mRoiHeight = (int) (img_input.size().height * m_dHscale);
@@ -448,18 +457,35 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
 
     private class AsyncTess extends AsyncTask<Bitmap, Integer, String> {
-
         @Override
         protected String doInBackground(Bitmap... mRelativeParams) {
             //Tesseract OCR 수행
-            sTess.setImage(bmp_result);
 
+            sTess.setImage(bmp_result);
             return sTess.getUTF8Text();
         }
 
         protected void onPostExecute(String result) {
             //완료 후 버튼 속성 변경 및 결과 출력
+            String[] ocr_result = result.split("\\n");
+            for(String w : ocr_result){
+                System.out.println(w);
+            }
+            Intent intent = new Intent(CameraView.this, add.class);
+            intent.putExtra("user_id",user_id);
+            intent.putExtra("company",ocr_result[0]);
+            intent.putExtra("name",ocr_result[1]);
+            intent.putExtra("phone",ocr_result[2]);
+            intent.putExtra("tel",ocr_result[3]);
+            intent.putExtra("email",ocr_result[4]);
+            intent.putExtra("address",ocr_result[5]);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bmp_result.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream .toByteArray();
 
+            intent.putExtra("img",byteArray);
+            startActivity(intent);
+            finish();
             mBtnOcrStart.setEnabled(true);
             mBtnOcrStart.setText("Retry");
             mBtnOcrStart.setTextColor(Color.WHITE);
@@ -467,8 +493,9 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
             mStartFlag = true;
 
             m_strOcrResult = result;
-            mTextOcrResult.setText(m_strOcrResult);
+           /* mTextOcrResult.setText(m_strOcrResult);*/
 
         }
     }
+
 }
