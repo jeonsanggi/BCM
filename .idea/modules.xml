@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BCM.iml" filepath="$PROJECT_DIR$/BCM.iml" />
+      <module fileurl="file://C:\Users\byunseonuk\AndroidStudioProjects\BCM\BCM.iml" filepath="C:\Users\byunseonuk\AndroidStudioProjects\BCM\BCM.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\byunseonuk\AndroidStudioProjects\BCM\app\app.iml" filepath="C:\Users\byunseonuk\AndroidStudioProjects\BCM\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/openCVLibrary341/openCVLibrary341.iml" filepath="$PROJECT_DIR$/openCVLibrary341/openCVLibrary341.iml" />
+      <module fileurl="file://C:\Users\byunseonuk\AndroidStudioProjects\BCM\openCVLibrary341\openCVLibrary341.iml" filepath="C:\Users\byunseonuk\AndroidStudioProjects\BCM\openCVLibrary341\openCVLibrary341.iml" />
     </modules>
   </component>
 </project>

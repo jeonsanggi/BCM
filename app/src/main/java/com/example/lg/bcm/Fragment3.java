@@ -87,7 +87,7 @@ public class Fragment3 extends Fragment {
         ct = inflater.getContext();
 
         Fragment3.GetData task = new Fragment3.GetData();
-        task.execute("http://192.168.1.150/getMyInfo.php");
+        task.execute("http://192.168.1.102/bcm/getMyInfo.php");
 
         Button buttonInsert = (Button)view.findViewById(R.id.button_nfc_write);
         buttonInsert.setOnClickListener(new View.OnClickListener() {

@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.example.lg.bcm.R;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -264,8 +265,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_tab2 :
                 // '버튼2' 클릭 시 '프래그먼트2' 호출
                 //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                Intent intent = new Intent(MainActivity.this, CameraView.class);
-                intent.putExtra("user_id",user_id);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //intent.putExtra("user_id",user_id);
                 startActivityForResult(intent,2);
 
                 break;
@@ -320,9 +321,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==2 && resultCode == RESULT_OK){
             bmp = (Bitmap) data.getParcelableExtra("STRING_IMG_RESULT");
-            sTess.setImage(bmp);
-            ocrresult = data.getStringExtra("STRING_OCR_RESULT");
-            callFragment(FRAGMENT2);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            Intent intent = new Intent(MainActivity.this,Ocr_prosess.class);
+            intent.putExtra("user_id",user_id);
+            intent.putExtra("bitmap",bytes);
+            startActivity(intent);
         }
     }
 }

@@ -114,7 +114,7 @@ public class SignUp extends AppCompatActivity {
             String imgurl = "url";
 
 
-            String serverURL = "http://192.168.1.150/signup.php";
+            String serverURL = "http://192.168.1.102/bcm/signup.php";
             String postParameters = "id=" + id +"&password=" + password +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+ "&imgurl=" + imgurl;
 
             try {

@@ -41,7 +41,7 @@
 
 
 
-
+        <activity android:name=".Ocr_prosess"></activity>
         <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,12 +59,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity
-            android:name=".CameraView"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             />
 
         <activity android:name=".Login">
         </activity>
