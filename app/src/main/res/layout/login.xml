@@ -21,7 +21,8 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText_login_pw" />
+        android:id="@+id/editText_login_pw"
+        android:password="true"/>
 
         <LinearLayout
             android:orientation="horizontal"

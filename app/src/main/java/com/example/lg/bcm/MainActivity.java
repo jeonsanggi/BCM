@@ -7,25 +7,35 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.provider.Settings;
+
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lg.bcm.R;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.Text;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String WRITE_SUCCESS = "Text written to the NFC tag successfully!";
     public static final String WRITE_ERROR = "Error during writing, is the NFC tag close enough to your device?";
 
+
+    private  Uri mImageCaptureUri;
+    private ImageView iv_UserPhoto;
+    private String absoultePath;
 
     private Button bt_tab1, bt_tab2, bt_tab3;
     ///////////////////
@@ -82,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_tab2 = (Button)findViewById(R.id.bt_tab2);
         bt_tab3 = (Button)findViewById(R.id.bt_tab3);
 
+        iv_UserPhoto = (ImageView)findViewById(R.id.user_image);
+
+
         // 탭 버튼에 대한 리스너 연결
         bt_tab1.setOnClickListener(this);
         bt_tab2.setOnClickListener(this);
@@ -90,11 +107,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         // 임의로 액티비티 호출 시점에 어느 프레그먼트를 프레임레이아웃에 띄울 것인지를 정함
-        if(from_add!=null&&from_add.equals("add")){
+        /*if(from_add!=null&&from_add.equals("add")){
             callFragment(FRAGMENT3);
         }else {
             callFragment(FRAGMENT1);
-        }
+        }*/
         sTess = new TessBaseAPI();
 
         language = "eng";
@@ -266,8 +283,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // '버튼2' 클릭 시 '프래그먼트2' 호출
                 //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+
+                String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+                mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+
+
+
                 //intent.putExtra("user_id",user_id);
-                startActivityForResult(intent,2);
+                startActivityForResult(intent,0);
 
                 break;
 
@@ -319,15 +345,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==2 && resultCode == RESULT_OK){
-            bmp = (Bitmap) data.getParcelableExtra("STRING_IMG_RESULT");
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
-            byte[] bytes = byteArrayOutputStream.toByteArray();
-            Intent intent = new Intent(MainActivity.this,Ocr_prosess.class);
-            intent.putExtra("user_id",user_id);
-            intent.putExtra("bitmap",bytes);
-            startActivity(intent);
+        if(resultCode != RESULT_OK){
+            return;
         }
+        if(requestCode == 0) {
+            Bitmap bitmap = BitmapFactory.decodeFile(mImageCaptureUri.getPath());
+            int j = 0;
+            TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+            if (!txtRecognizer.isOperational()) {
+            } else {
+                Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+                SparseArray items = txtRecognizer.detect(frame);
+                StringBuilder strBuilder = new StringBuilder();
+                for (int i = 0; i < items.size(); i++) {
+                    TextBlock item = (TextBlock) items.valueAt(i);
+                    strBuilder.append(item.getValue());
+                    strBuilder.append("/");
+                    for (Text line : item.getComponents()) {
+                        Log.v("detect ocr ==", line.getValue());
+                        j++;
+                    }
+                }
+            }
+
+            File f = new  File(mImageCaptureUri.getPath());
+            if(f.exists())
+                f.delete();
+        }
+
     }
+
+
 }

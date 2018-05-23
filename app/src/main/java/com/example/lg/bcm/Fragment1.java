@@ -67,7 +67,7 @@ public class Fragment1 extends Fragment {
         ct = inflater.getContext();
         GetData task = new GetData();
 
-        task.execute("http://192.168.1.102/bcm/getBCList.php");
+        task.execute("http://192.168.1.150/getBCList.php");
 
         return view;
     }
@@ -187,7 +187,7 @@ public class Fragment1 extends Fragment {
                 String tel = item.getString(TAG_TEL);
                 String email = item.getString(TAG_EMAIL);
                 String address = item.getString(TAG_ADDRESS);
-                String imgurl = item.getString(TAG_IMGURL);
+
 
                 HashMap<String,String> hashMap = new HashMap<>();
 
@@ -198,7 +198,7 @@ public class Fragment1 extends Fragment {
                 hashMap.put(TAG_TEL, tel);
                 hashMap.put(TAG_EMAIL, email);
                 hashMap.put(TAG_ADDRESS, address);;
-                hashMap.put(TAG_IMGURL, imgurl);
+
 
                 mArrayList.add(hashMap);
             }
