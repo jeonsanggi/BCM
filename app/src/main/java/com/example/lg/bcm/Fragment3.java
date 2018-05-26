@@ -3,6 +3,8 @@ package com.example.lg.bcm;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -27,10 +30,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +63,8 @@ public class Fragment3 extends Fragment {
     private TextView mTextemail;
     private TextView mTextaddress;
     private TextView mTextImgurl;
-
+    private ImageView my_bc_img;
+    private Bitmap bitmap;
     String company;
     String name;
     String phone;
@@ -83,7 +89,7 @@ public class Fragment3 extends Fragment {
         mTexttel = (TextView)view.findViewById(R.id.textView_list_tel);
         mTextemail = (TextView)view.findViewById(R.id.textView_list_email);
         mTextaddress = (TextView)view.findViewById(R.id.textView_list_address);
-
+        my_bc_img = (ImageView)view.findViewById(R.id.my_bc_img);
         ct = inflater.getContext();
 
         Fragment3.GetData task = new Fragment3.GetData();
@@ -245,6 +251,7 @@ public class Fragment3 extends Fragment {
                 email = item.getString(TAG_EMAIL);
                 address = item.getString(TAG_ADDRESS);
                 imgurl = item.getString(TAG_IMGURL);
+                imgurl.replace("\\","");
 
             }
 
@@ -254,8 +261,31 @@ public class Fragment3 extends Fragment {
             mTexttel.setText(tel);
             mTextemail.setText(email);
             mTextaddress.setText(address);
+            Thread mThread = new Thread(){
+                @Override
+                public void run(){
+                    try{
+                        URL url = new URL(imgurl);
 
-
+                        HttpURLConnection conn= (HttpURLConnection)url.openConnection();
+                        conn.setDoInput(true);
+                        conn.connect();
+                        InputStream is = conn.getInputStream();
+                        bitmap = BitmapFactory.decodeStream(is);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            mThread.start();
+            try {
+                mThread.join();
+                my_bc_img.setImageBitmap(bitmap);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } catch (JSONException e) {
             Log.d(TAG, "showResult : ", e);
         }

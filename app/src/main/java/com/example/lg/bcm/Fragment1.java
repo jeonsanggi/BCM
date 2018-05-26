@@ -4,27 +4,47 @@ package com.example.lg.bcm;
  * Created by byunseonuk on 2018-03-19.
  */
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lg.bcm.R;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.Text;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -33,14 +53,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static android.app.Activity.RESULT_OK;
+
 public class Fragment1 extends Fragment {
 
     private final int INSERT_FRAG =1;
     //
     private static String TAG = "phptest_MainActivity";
-
+    public static  final int CAMERA_PERMISSION_REQUEST_CODE = 111;
+    public static  final int READ_PERMISSION_REQUEST_CODE = 222;
+    public static  final int WRITE_PERMISSION_REQUEST_CODE = 333;
+    private  Uri mImageCaptureUri;
     private static final String TAG_JSON="webnautes";
-    private static final String TAG_SEQ = "seq";
     private static final String TAG_COMPANY = "company";
     private static final String TAG_NAME = "name";
     private static final String TAG_PHONE = "phone";
@@ -50,6 +74,7 @@ public class Fragment1 extends Fragment {
     private static final String TAG_IMGURL = "imgurl";
     private String user_id;
     private TextView mTextViewResult;
+    private Button insert_bc_btn;
     ArrayList<HashMap<String, String>> mArrayList;
     ListView mlistView;
     String mJsonString;
@@ -61,15 +86,46 @@ public class Fragment1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view =  (View) inflater.inflate(R.layout.fragment_fragment1, container, false);
-        mTextViewResult = (TextView) view.findViewById(R.id.textView_main_result);
         mlistView = (ListView) view.findViewById(R.id.listView_main_list);
+        mTextViewResult = (TextView)view.findViewById(R.id.textView_main_result);
+        insert_bc_btn = (Button)view.findViewById(R.id.insert_bc_btn);
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         GetData task = new GetData();
 
-        task.execute("http://192.168.1.150/getBCList.php");
-
+        task.execute("http://192.168.1.102/bcm/getBCList.php");
+        insert_bc_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
         return view;
+    }
+    private void showDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("");
+        builder.setMessage("사진촬영을 하시겠습니까");
+        builder.setPositiveButton("예",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getContext(),MainActivity.class);
+                        intent.putExtra("user_id",user_id);
+                        intent.putExtra("from","frag1");
+                        startActivity(intent);
+                    }
+                });
+        builder.setNegativeButton("아니오",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getContext(),add.class);
+                        intent.putExtra("user_id",user_id);
+                        intent.putExtra("from","frag1");
+                        intent.putExtra("check","list");
+                        startActivity(intent);
+                    }
+                });
+        builder.show();
     }
 
     private class GetData extends AsyncTask<String, Void, String> {
@@ -84,17 +140,14 @@ public class Fragment1 extends Fragment {
                     "Please Wait", null, true, true);
         }
 
-
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
             progressDialog.dismiss();
-            mTextViewResult.setText(result);
             Log.d(TAG, "response  - " + result);
 
             if (result == null){
-
                 mTextViewResult.setText(errorString);
             }
             else {
@@ -180,7 +233,6 @@ public class Fragment1 extends Fragment {
 
                 JSONObject item = jsonArray.getJSONObject(i);
 
-                String seq = item.getString(TAG_SEQ);
                 String company = item.getString(TAG_COMPANY);
                 String name = item.getString(TAG_NAME);
                 String phone = item.getString(TAG_PHONE);
@@ -191,7 +243,6 @@ public class Fragment1 extends Fragment {
 
                 HashMap<String,String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_SEQ, seq);
                 hashMap.put(TAG_COMPANY, company);
                 hashMap.put(TAG_NAME, name);
                 hashMap.put(TAG_PHONE, phone);
@@ -205,16 +256,14 @@ public class Fragment1 extends Fragment {
 
             ListAdapter adapter = new SimpleAdapter(
                     ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_SEQ, TAG_COMPANY, TAG_NAME, TAG_PHONE, TAG_TEL, TAG_EMAIL, TAG_ADDRESS, TAG_IMGURL},
-                    new int[]{R.id.textView_list_seq, R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone, R.id.textView_list_tel, R.id.textView_list_email, R.id.textView_list_address, R.id.textView_list_imgurl}
+                    new String[]{TAG_COMPANY, TAG_NAME, TAG_PHONE},
+                    new int[]{ R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone}
             );
 
             mlistView.setAdapter(adapter);
 
         } catch (JSONException e) {
-
             Log.d(TAG, "showResult : ", e);
         }
-
     }
 }

@@ -1,139 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical">
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-
-            android:text="아이디"/>
-        <EditText
-            android:id="@+id/signup_id"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="비밀번호"/>
-        <EditText
-            android:id="@+id/signup_password"
+            <ImageView
+                android:id="@+id/signup_imgView"
+                android:layout_width="300dp"
+                android:layout_height="200dp"
+                android:scaleType="centerInside"
+                android:layerType="software"
+                android:background="@drawable/image_frame"
+                android:layout_gravity="center_horizontal"
+                />
+            <Button
+                android:id="@+id/signup_camera_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="명함 촬영"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="비밀번호확인"/>
-        <EditText
-            android:id="@+id/signup_password_check"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="회사"/>
-        <EditText
-            android:id="@+id/signup_company"
+                android:text="아이디"/>
+            <EditText
+                android:id="@+id/signup_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="이름"/>
-        <EditText
-            android:id="@+id/signup_name"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="비밀번호"/>
+            <EditText
+                android:id="@+id/signup_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="휴대전화"/>
-        <EditText
-            android:id="@+id/signup_phone"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="비밀번호확인"/>
+            <EditText
+                android:id="@+id/signup_password_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="전화"/>
-        <EditText
-            android:id="@+id/signup_tel"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="회사"/>
+            <EditText
+                android:id="@+id/signup_company"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
 
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="이메일"/>
-        <EditText
-            android:id="@+id/signup_email"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="이름"/>
+            <EditText
+                android:id="@+id/signup_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="주소"/>
-        <EditText
-            android:id="@+id/signup_address"
+            android:orientation="horizontal">
+            <TextView
+
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="휴대전화"/>
+            <EditText
+                android:id="@+id/signup_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="전화"/>
+            <EditText
+                android:id="@+id/signup_tel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="이메일"/>
+            <EditText
+                android:id="@+id/signup_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="주소"/>
+            <EditText
+                android:id="@+id/signup_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Button
+            android:id="@+id/signup_bt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="가입"/>
     </LinearLayout>
-    <Button
-        android:id="@+id/signup_bt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="가입"/>
-</LinearLayout>
+</ScrollView>

@@ -1,22 +1,32 @@
 package com.example.lg.bcm;
 
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -50,12 +60,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static String TAG = "휴대폰 정보 가져오기";
     private final int FRAGMENT1 =1;
-    private final int FRAGMENT2 =2;
     private final int FRAGMENT3 =3;
     public static final String ERROR_DETECTED = "No NFC tag detected!";
     public static final String WRITE_SUCCESS = "Text written to the NFC tag successfully!";
     public static final String WRITE_ERROR = "Error during writing, is the NFC tag close enough to your device?";
-
+    public static  final int CAMERA_PERMISSION_REQUEST_CODE = 111;
+    public static  final int READ_PERMISSION_REQUEST_CODE = 222;
+    public static  final int WRITE_PERMISSION_REQUEST_CODE = 333;
 
     private  Uri mImageCaptureUri;
     private ImageView iv_UserPhoto;
@@ -78,25 +89,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Tag myTag;
     Context context;
 
-    TextView tvNFCContent;
-    TextView message;
-    Button btnWrite;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
-
+        /*마시멜로 이상 카메라 권한*/
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
+            int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+            int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+            }if (readstoragePermissionResult == PackageManager.PERMISSION_DENIED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
+            }if (writestoragePermissionResult == PackageManager.PERMISSION_DENIED) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
+            }
+        }
+        String from="";
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
-        String from_add = intent.getStringExtra("to_main");
+        if(intent.hasExtra("from")) {
+            from = intent.getStringExtra("from");
+        }
+
         bt_tab1 = (Button)findViewById(R.id.bt_tab1);
         bt_tab2 = (Button)findViewById(R.id.bt_tab2);
         bt_tab3 = (Button)findViewById(R.id.bt_tab3);
-
-        iv_UserPhoto = (ImageView)findViewById(R.id.user_image);
 
 
         // 탭 버튼에 대한 리스너 연결
@@ -107,11 +127,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         // 임의로 액티비티 호출 시점에 어느 프레그먼트를 프레임레이아웃에 띄울 것인지를 정함
-        /*if(from_add!=null&&from_add.equals("add")){
+        if(from!=null&&from.equals("add")){
             callFragment(FRAGMENT3);
-        }else {
+        }else if(from!=null&&from.equals("frag1")){
+            Intent fintent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+            mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+            fintent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+            if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+                int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
+                int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+                int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+                }
+                if(readstoragePermissionResult== PackageManager.PERMISSION_DENIED){
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
+                }
+                if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
+                }else{
+                    startActivityForResult(fintent,0);
+                }
+            }else {
+                startActivityForResult(fintent, 0);
+            }
+        }else{
             callFragment(FRAGMENT1);
-        }*/
+        }
+
         sTess = new TessBaseAPI();
 
         language = "eng";
@@ -184,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(MainActivity.this,add.class);
 
         intent.putExtra("user_id",user_id);
+        intent.putExtra("check","list");
         intent.putExtra("company", company);
         intent.putExtra("name", name);
         intent.putExtra("phone", phone);
@@ -283,18 +328,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // '버튼2' 클릭 시 '프래그먼트2' 호출
                 //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-
                 String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
                 mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-
-
-
-
-                //intent.putExtra("user_id",user_id);
-                startActivityForResult(intent,0);
-
+                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+                    int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
+                    int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+                    }
+                    if(readstoragePermissionResult== PackageManager.PERMISSION_DENIED){
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
+                    }
+                    if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
+                    }else{
+                        startActivityForResult(intent,0);
+                    }
+                }else {
+                    startActivityForResult(intent, 0);
+                }
                 break;
 
             case R.id.bt_tab3 :
@@ -303,7 +357,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode){
+            case CAMERA_PERMISSION_REQUEST_CODE:
+                for(int i=0;i<grantResults.length;i++) {
+                    if (grantResults[i]<0){
+                        Toast.makeText(MainActivity.this,"해당권한을 활서화 하셔야 이용가능합니다.",Toast.LENGTH_SHORT);
+                    }
+                }
+                break;
+            case READ_PERMISSION_REQUEST_CODE :
+                for(int i=0;i<grantResults.length;i++) {
+                    if (grantResults[i]<0){
+                        Toast.makeText(MainActivity.this,"해당권한을 활서화 하셔야 이용가능합니다.",Toast.LENGTH_SHORT);
+                    }
+                }
+                break;
+            case WRITE_PERMISSION_REQUEST_CODE :
+                for(int i=0;i<grantResults.length;i++) {
+                    if (grantResults[i]<0){
+                        Toast.makeText(MainActivity.this,"해당권한을 활서화 하셔야 이용가능합니다.",Toast.LENGTH_SHORT);
+                    }
+                }
+                break;
+        }
+    }
     private void callFragment(int frament_no){
 
         // 프래그먼트 사용을 위해넘기기
@@ -345,35 +425,108 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        String company="";
+        String name="";
+        String result="";
+        StringBuilder stringBuilder = new StringBuilder();
         if(resultCode != RESULT_OK){
             return;
         }
         if(requestCode == 0) {
             Bitmap bitmap = BitmapFactory.decodeFile(mImageCaptureUri.getPath());
+            ExifInterface exif = null;
+
+            try {
+                exif = new ExifInterface(mImageCaptureUri.getPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int exifOrientation;
+            int exifDegree;
+
+            if (exif != null) {
+                exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                exifDegree = exifOrientationToDegrees(exifOrientation);
+            } else {
+                exifDegree = 0;
+            }
+            Bitmap result_bitmap = (rotate(bitmap,exifDegree));
             int j = 0;
             TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
             if (!txtRecognizer.isOperational()) {
             } else {
-                Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+                Frame frame = new Frame.Builder().setBitmap(result_bitmap).build();
                 SparseArray items = txtRecognizer.detect(frame);
-                StringBuilder strBuilder = new StringBuilder();
+                Log.d("length",items.size()+"");
                 for (int i = 0; i < items.size(); i++) {
                     TextBlock item = (TextBlock) items.valueAt(i);
-                    strBuilder.append(item.getValue());
-                    strBuilder.append("/");
-                    for (Text line : item.getComponents()) {
-                        Log.v("detect ocr ==", line.getValue());
-                        j++;
+                    if (i == 0) {
+                        company = item.getValue();
+                    } else if (i == 1) {
+                        name = item.getValue();
+                    } else {
+                        Log.v("Block", item.getValue());
+                        for (Text line : item.getComponents()) {
+                            Log.v("detect ocr ==", line.getValue());
+                            j++;
+                            result += line.getValue().toString() + "/";
+                        }
                     }
                 }
             }
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            resizeBitmapImg(result_bitmap).compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
 
             File f = new  File(mImageCaptureUri.getPath());
+            Bundle bundle = new Bundle();
+
             if(f.exists())
                 f.delete();
+            Intent intent = new Intent(MainActivity.this, add.class);
+            intent.putExtra("user_id",user_id);
+            intent.putExtra("img",byteArray);
+            intent.putExtra("from","ocr");
+            intent.putExtra("check","list");
+            intent.putExtra("company",company);
+            intent.putExtra("name",name);
+            intent.putExtra("ocr_result",result);
+            startActivity(intent);
+        }
+    }
+    public Bitmap resizeBitmapImg(Bitmap source){
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int newWidth = width;
+        int newHeight = height;
+        float rate = 0.0f;
+
+        if(width > height){
+            newWidth = 800;
+            newHeight = 500;
+        }else{
+            newWidth= 500;
+            newHeight = 500;
         }
 
+        return Bitmap.createScaledBitmap(source, newWidth, newHeight, true);
     }
 
+    private int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
 
+    private Bitmap rotate(Bitmap bitmap, float degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
 }
