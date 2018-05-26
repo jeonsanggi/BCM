@@ -9,6 +9,7 @@ import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -240,7 +241,8 @@ public class Fragment3 extends Fragment {
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
-
+            byte[] deimgurl;
+            Bitmap debitmap=null;
             for(int i=0;i<jsonArray.length();i++){
                 JSONObject item = jsonArray.getJSONObject(i);
 
@@ -251,8 +253,8 @@ public class Fragment3 extends Fragment {
                 email = item.getString(TAG_EMAIL);
                 address = item.getString(TAG_ADDRESS);
                 imgurl = item.getString(TAG_IMGURL);
-                imgurl.replace("\\","");
-
+                /*deimgurl = Base64.decode(item.getString(TAG_IMGURL),Base64.DEFAULT);
+                debitmap = BitmapFactory.decodeByteArray(deimgurl,0,deimgurl.length);*/
             }
 
             mTextcompany.setText(company);
@@ -261,6 +263,7 @@ public class Fragment3 extends Fragment {
             mTexttel.setText(tel);
             mTextemail.setText(email);
             mTextaddress.setText(address);
+            //my_bc_img.setImageBitmap(debitmap);
             Thread mThread = new Thread(){
                 @Override
                 public void run(){

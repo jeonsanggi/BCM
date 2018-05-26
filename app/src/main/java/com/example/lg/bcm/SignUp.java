@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -14,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -38,7 +40,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -74,7 +78,9 @@ public class SignUp extends AppCompatActivity {
 
     private Uri mImageCaptureUri;
     private Bitmap resizedBitmap;
+    private Bitmap result_bitmap;
     private String string_byte;
+    private byte[] bytes;
     String mJsonString;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,7 +170,7 @@ public class SignUp extends AppCompatActivity {
             } else {
                 exifDegree = 0;
             }
-            Bitmap result_bitmap = (rotate(bitmap,exifDegree));
+            result_bitmap = (rotate(bitmap,exifDegree));
             TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
             if (!txtRecognizer.isOperational()) {
             } else {
@@ -191,7 +197,7 @@ public class SignUp extends AppCompatActivity {
             imageView.setImageBitmap(result_bitmap);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             result_bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
-            byte[] bytes = byteArrayOutputStream.toByteArray();
+            bytes = byteArrayOutputStream.toByteArray();
             string_byte = Base64.encodeToString(bytes,Base64.DEFAULT);
             /* Pattern */
             String phonepattern = "(Moblie.?|M.?|Phone.?)?.(01[0-9]).(\\d{3,4}).(\\d{4})";
@@ -304,8 +310,8 @@ public class SignUp extends AppCompatActivity {
 
             File f = new  File(mImageCaptureUri.getPath());
             Bundle bundle = new Bundle();
-            if(f.exists())
-                f.delete();
+            /*if(f.exists())
+                f.delete();*/
 
         }
     }
@@ -326,7 +332,13 @@ public class SignUp extends AppCompatActivity {
 
         return Bitmap.createScaledBitmap(source, newWidth, newHeight, true);
     }*/
-
+    /*public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }*/
     private int exifOrientationToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
             return 90;
@@ -345,7 +357,9 @@ public class SignUp extends AppCompatActivity {
     }
     class Insert extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
-
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 5 * 1024 * 1024;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -376,6 +390,17 @@ public class SignUp extends AppCompatActivity {
             String tel = (String)params[5];
             String email = (String)params[6];
             String address = (String)params[7];
+            String imgurl="url";
+            if(bytes!=null) {
+                imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
+            }
+           /* Cursor c = getApplicationContext().getContentResolver().query(Uri.parse(mImageCaptureUri.getPath().toString()),null,null,null,null);
+            c.moveToNext();
+            String absolutePath = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
+            c.close();*/
+            String lineEnd = "\r\n";
+            String twoHyphens = "--";
+            String boundary = "****!@#*";
 
             String serverURL = "http://192.168.1.102/bcm/signup.php";
             String postParameters = "id=" + id +"&password=" + password +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&img_string="+string_byte;
@@ -384,16 +409,93 @@ public class SignUp extends AppCompatActivity {
 
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setReadTimeout(5000);
-                httpURLConnection.setConnectTimeout(5000);
+                //httpURLConnection.setReadTimeout(5000);
+                //httpURLConnection.setConnectTimeout(5000);
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setUseCaches(false);
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoInput(true);
-                httpURLConnection.connect();
+                httpURLConnection.setRequestProperty("ENCTYPE", "multipart/form-data");
+                httpURLConnection.setRequestProperty("Connection","Keep-Alive");
+                httpURLConnection.setRequestProperty("Content-Type","multipart/form-data; charset=utf-8; boundary="+boundary);
+                httpURLConnection.setRequestProperty("uploaded_file", id);
+                
+                DataOutputStream dos =
+                        new DataOutputStream(httpURLConnection.getOutputStream());
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
 
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                outputStream.write(postParameters.getBytes("UTF-8"));
-                outputStream.flush();
-                outputStream.close();
+
+
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\""+id+".jpg\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+
+                dos.write(bytes,0,bytes.length);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"id\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(id);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"password\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(password);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"phone\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(phone);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"email\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(email);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"tel\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(tel);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"address\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(address);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"imgurl\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(imgurl);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"company\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(company);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"name\"" +lineEnd);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(name);
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                dos.flush();
+                /*int ch;
+                InputStream is = httpURLConnection.getInputStream();
+                StringBuffer b =new StringBuffer();
+                while( ( ch = is.read() ) != -1 ){
+                    b.append( (char)ch );
+                }
+                String s=b.toString();
+                Log.e("Test", "result = " + s);*/
+                dos.close();
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
                 Log.d(TAG, "POST response code - " + responseStatusCode);
