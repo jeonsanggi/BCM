@@ -2,27 +2,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context="com.example.lg.bcm.MainActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <ListView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="6"
-            android:layout_margin="5dp"
-            android:padding="5dp"
-            android:id="@+id/listView_main_list" />
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:text="명함 추가"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:id="@+id/insert_bc_btn"
+                android:layout_gravity="center"
+                android:text="+"/>
 
-        <TextView
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:layout_margin="5dp"
-            android:padding="5dp"
-            android:id="@+id/textView_main_result" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:id="@+id/listView_main_list" />
+        </LinearLayout>
     </LinearLayout>
-    <!-- TODO: Update blank fragment layout -->
+
 
 </FrameLayout>
