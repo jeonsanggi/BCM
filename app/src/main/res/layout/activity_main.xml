@@ -13,34 +13,40 @@ android:layout_height="match_parent">
     android:layout_height="match_parent"
     android:layout_above="@+id/linearLayout" />
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:orientation="horizontal"
-    android:layout_alignParentBottom="true"
-    android:id="@+id/linearLayout">
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
 
-    <Button
-        android:layout_weight="1"
-        android:id="@+id/bt_tab1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TAB 1"/>
+        <Button
+            android:id="@+id/bt_tab1"
+            android:layout_width="69dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/card" />
 
-    <Button
-        android:layout_weight="1"
-        android:id="@+id/bt_tab2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tab 2"/>
+        <Button
+            android:id="@+id/bt_tab2"
+            android:layout_width="69dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/camera" />
 
-    <Button
-        android:layout_weight="1"
-        android:id="@+id/bt_tab3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MYPAGE"/>
+        <Button
+            android:id="@+id/bt_tab3"
+            android:layout_width="69dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/person" />
 
-</LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

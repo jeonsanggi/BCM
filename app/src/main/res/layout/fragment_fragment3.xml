@@ -1,71 +1,138 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-        <TextView
-            android:id="@+id/textView_list_seq"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:padding="5dp" />
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_margin="15dp"
+    android:padding="10dp">
 
-
-        <TextView
-            android:id="@+id/textView_list_company"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:padding="5dp" />
-
-
-        <TextView
-            android:id="@+id/textView_list_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:layout_margin="5dp"
-            android:padding="5dp" />
-
-        <TextView
-            android:id="@+id/textView_list_phone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:padding="5dp" />
-
-
-        <TextView
-            android:id="@+id/textView_list_tel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:padding="5dp" />
-
-    <TextView
-            android:id="@+id/textView_list_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:layout_margin="5dp"
-            android:padding="5dp" />
-
-    <TextView
-        android:id="@+id/textView_list_email"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_weight="1"
-        android:padding="5dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:text="회사명:" />
+            <TextView
+                android:id="@+id/textView_list_company"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:text="이름:" />
+            <TextView
+                android:id="@+id/textView_list_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:text="휴대번호:"/>
+            <TextView
+                android:id="@+id/textView_list_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:text="전화:"/>
+            <TextView
+                android:id="@+id/textView_list_tel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:text="Email:"/>
+            <TextView
+                android:id="@+id/textView_list_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:text="주소:"/>
+            <TextView
+                android:id="@+id/textView_list_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+        <TextView
             android:id="@+id/textView_list_imgurl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,11 +140,17 @@
             android:layout_margin="5dp"
             android:padding="5dp" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/button_nfc_write"
-        android:text="NFC로 내보내기"/>
-
-</LinearLayout>
+        <Button
+            android:id="@+id/button_nfc_write"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:background="@drawable/buttonshape"
+            android:shadowColor="#A8A8A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:text="NFC로 내보내기"
+            android:textColor="#FFFFFF"
+            android:textSize="17dp" />
+    </LinearLayout>
 </FrameLayout>
