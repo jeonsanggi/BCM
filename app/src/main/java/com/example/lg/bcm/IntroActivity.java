@@ -12,6 +12,7 @@ public class IntroActivity extends AppCompatActivity {
         @Override
         public void run() {
             Intent intent = new Intent(getApplicationContext(), Login.class);
+            intent.putExtra("Logout", "intro");
             startActivity(intent);
             finish();
         }

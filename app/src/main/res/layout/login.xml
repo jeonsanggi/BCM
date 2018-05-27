@@ -46,7 +46,6 @@
         android:hint="Password"
         android:inputType="textPassword"
         android:paddingLeft="0dp"
-        android:textColor="#FFF"
         android:textColorHint="#999" />
 </LinearLayout>
 

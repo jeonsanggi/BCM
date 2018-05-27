@@ -47,6 +47,9 @@
         <activity android:name=".Nfc_Write">
 
         </activity>
+        <activity android:name=".List_show">
+
+        </activity>
     </application>
 
 </manifest>

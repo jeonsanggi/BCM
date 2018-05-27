@@ -77,6 +77,16 @@ public class Login extends AppCompatActivity{
         editor = pref.edit();
 
 
+        Intent intent = getIntent();
+        String Logout = intent.getStringExtra("Logout");
+
+        Log.v("Logout========", Logout);
+
+        if(Logout.equals("Logout")){
+            editor.putBoolean("auto_Login_enabled", false);
+            editor.commit();
+        }
+
         //자동로그인을 위한 버튼이 check 되어있는지 확인
         if(pref.getBoolean("auto_Login_enabled",false)){
             User_ID.setText(pref.getString("ID",""));
@@ -219,8 +229,6 @@ public class Login extends AppCompatActivity{
 
         }
     }
-
-
     private void check_login(){
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);

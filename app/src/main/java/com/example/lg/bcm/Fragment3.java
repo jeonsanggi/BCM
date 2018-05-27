@@ -143,6 +143,7 @@ public class Fragment3 extends Fragment {
         //로그아웃 butoon을 눌렀을 경우 로그인 페이지로 전환
         else if (id == R.id.LogOut){
             Intent intent = new Intent(getActivity(),Login.class);
+            intent.putExtra("Logout", "Logout");
             startActivityForResult(intent, 1);
         }
 
@@ -253,8 +254,7 @@ public class Fragment3 extends Fragment {
                 email = item.getString(TAG_EMAIL);
                 address = item.getString(TAG_ADDRESS);
                 imgurl = item.getString(TAG_IMGURL);
-                /*deimgurl = Base64.decode(item.getString(TAG_IMGURL),Base64.DEFAULT);
-                debitmap = BitmapFactory.decodeByteArray(deimgurl,0,deimgurl.length);*/
+
             }
 
             mTextcompany.setText(company);
