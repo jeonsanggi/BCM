@@ -69,6 +69,8 @@ public class List_show extends AppCompatActivity {
         address = intent.getStringExtra("address");
         imgurl = intent.getStringExtra("imgurl");
 
+        Log.v("Listshow imgurl", imgurl);
+
 
         mTextcompany.setText(company);
         mTextname.setText(name);
@@ -129,6 +131,10 @@ public class List_show extends AppCompatActivity {
             intent.putExtra("address", address);
             intent.putExtra("imgurl", imgurl);
             startActivityForResult(intent, 1);
+        }else if (id == R.id.LogOut){
+            Intent intent = new Intent(List_show.this,Login.class);
+            intent.putExtra("Logout", "Logout");
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

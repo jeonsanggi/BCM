@@ -90,6 +90,7 @@ public class Fragment3 extends Fragment {
         mTexttel = (TextView)view.findViewById(R.id.textView_list_tel);
         mTextemail = (TextView)view.findViewById(R.id.textView_list_email);
         mTextaddress = (TextView)view.findViewById(R.id.textView_list_address);
+        mTextImgurl = (TextView) view.findViewById(R.id.textView_list_imgurl);
         my_bc_img = (ImageView)view.findViewById(R.id.my_bc_img);
         ct = inflater.getContext();
 
@@ -144,6 +145,7 @@ public class Fragment3 extends Fragment {
         //로그아웃 butoon을 눌렀을 경우 로그인 페이지로 전환
         else if (id == R.id.LogOut){
             Intent intent = new Intent(getActivity(),Login.class);
+            intent.putExtra("Logout", "Logout");
             startActivity(intent);
         }
 

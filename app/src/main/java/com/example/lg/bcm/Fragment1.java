@@ -106,7 +106,7 @@ public class Fragment1 extends Fragment {
         mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.v("company === ", mArrayList.get(position).get("company"));
+                Log.v("IMGURL === ", mArrayList.get(position).get("imgurl"));
                 Intent intent = new Intent(getActivity(),List_show.class);
 
                 intent.putExtra("user_id",user_id);
@@ -262,6 +262,7 @@ public class Fragment1 extends Fragment {
                 String tel = item.getString(TAG_TEL);
                 String email = item.getString(TAG_EMAIL);
                 String address = item.getString(TAG_ADDRESS);
+                String imgurl = item.getString(TAG_IMGURL);
 
 
                 HashMap<String,String> hashMap = new HashMap<>();
@@ -272,7 +273,7 @@ public class Fragment1 extends Fragment {
                 hashMap.put(TAG_TEL, tel);
                 hashMap.put(TAG_EMAIL, email);
                 hashMap.put(TAG_ADDRESS, address);
-
+                hashMap.put(TAG_IMGURL,imgurl);
 
                 mArrayList.add(hashMap);
             }
