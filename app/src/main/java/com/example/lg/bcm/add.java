@@ -54,7 +54,7 @@ public class add extends AppCompatActivity {
     String inaddress ;
     String inimgurl ;
     String user_id;
-    String from;
+    String from="";
     String check;
     Bitmap bitmap;
     protected void onCreate(Bundle savedInstanceState) {

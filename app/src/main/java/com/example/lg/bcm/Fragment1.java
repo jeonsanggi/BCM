@@ -87,7 +87,7 @@ public class Fragment1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view =  (View) inflater.inflate(R.layout.fragment_fragment1, container, false);
         mlistView = (ListView) view.findViewById(R.id.listView_main_list);
-        mTextViewResult = (TextView)view.findViewById(R.id.textView_main_result);
+
         insert_bc_btn = (Button)view.findViewById(R.id.insert_bc_btn);
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();

@@ -5,12 +5,18 @@
     android:orientation="horizontal"
     android:layout_margin="15dp"
     android:padding="10dp">
-
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="200dp"
+            android:id="@+id/my_bc_img"
+            android:scaleType="centerInside"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -153,4 +159,5 @@
             android:textColor="#FFFFFF"
             android:textSize="17dp" />
     </LinearLayout>
+    </ScrollView>
 </FrameLayout>

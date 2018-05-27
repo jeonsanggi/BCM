@@ -44,6 +44,9 @@
         <activity android:name=".SignUp">
 
         </activity>
+        <activity android:name=".Nfc_Write">
+
+        </activity>
     </application>
 
 </manifest>

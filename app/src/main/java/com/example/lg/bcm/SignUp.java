@@ -394,10 +394,7 @@ public class SignUp extends AppCompatActivity {
             if(bytes!=null) {
                 imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
             }
-           /* Cursor c = getApplicationContext().getContentResolver().query(Uri.parse(mImageCaptureUri.getPath().toString()),null,null,null,null);
-            c.moveToNext();
-            String absolutePath = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
-            c.close();*/
+
             String lineEnd = "\r\n";
             String twoHyphens = "--";
             String boundary = "****!@#*";
@@ -419,7 +416,7 @@ public class SignUp extends AppCompatActivity {
                 httpURLConnection.setRequestProperty("Connection","Keep-Alive");
                 httpURLConnection.setRequestProperty("Content-Type","multipart/form-data; charset=utf-8; boundary="+boundary);
                 httpURLConnection.setRequestProperty("uploaded_file", id);
-                
+
                 DataOutputStream dos =
                         new DataOutputStream(httpURLConnection.getOutputStream());
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
@@ -487,14 +484,6 @@ public class SignUp extends AppCompatActivity {
                 dos.writeBytes(lineEnd);
                 dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
                 dos.flush();
-                /*int ch;
-                InputStream is = httpURLConnection.getInputStream();
-                StringBuffer b =new StringBuffer();
-                while( ( ch = is.read() ) != -1 ){
-                    b.append( (char)ch );
-                }
-                String s=b.toString();
-                Log.e("Test", "result = " + s);*/
                 dos.close();
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
