@@ -24,6 +24,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -73,7 +74,7 @@ public class Fragment1 extends Fragment {
     private static final String TAG_ADDRESS ="address";
     private static final String TAG_IMGURL = "imgurl";
     private String user_id;
-    private TextView mTextViewResult;
+
     private Button insert_bc_btn;
     ArrayList<HashMap<String, String>> mArrayList;
     ListView mlistView;
@@ -88,6 +89,7 @@ public class Fragment1 extends Fragment {
         View view =  (View) inflater.inflate(R.layout.fragment_fragment1, container, false);
         mlistView = (ListView) view.findViewById(R.id.listView_main_list);
 
+
         insert_bc_btn = (Button)view.findViewById(R.id.insert_bc_btn);
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
@@ -98,6 +100,26 @@ public class Fragment1 extends Fragment {
             @Override
             public void onClick(View view) {
                 showDialog();
+            }
+        });
+
+        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Log.v("company === ", mArrayList.get(position).get("company"));
+                Intent intent = new Intent(getActivity(),List_show.class);
+
+                intent.putExtra("user_id",user_id);
+                intent.putExtra("company", mArrayList.get(position).get("company"));
+                intent.putExtra("name", mArrayList.get(position).get("name"));
+                intent.putExtra("phone", mArrayList.get(position).get("phone"));
+                intent.putExtra("tel", mArrayList.get(position).get("tel"));
+                intent.putExtra("email", mArrayList.get(position).get("email"));
+                intent.putExtra("address", mArrayList.get(position).get("address"));
+                intent.putExtra("imgurl", mArrayList.get(position).get("imgurl"));
+                startActivity(intent);
+
+
             }
         });
         return view;
@@ -149,7 +171,7 @@ public class Fragment1 extends Fragment {
             Log.d(TAG, "response  - " + result);
 
             if (result == null){
-                mTextViewResult.setText(errorString);
+
             }
             else {
 

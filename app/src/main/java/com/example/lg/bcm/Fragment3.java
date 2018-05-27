@@ -31,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -67,7 +66,6 @@ public class Fragment3 extends Fragment {
     private TextView mTextImgurl;
     private ImageView my_bc_img;
     private Bitmap bitmap;
-    private byte[] bytes;
     String company;
     String name;
     String phone;
@@ -92,7 +90,6 @@ public class Fragment3 extends Fragment {
         mTexttel = (TextView)view.findViewById(R.id.textView_list_tel);
         mTextemail = (TextView)view.findViewById(R.id.textView_list_email);
         mTextaddress = (TextView)view.findViewById(R.id.textView_list_address);
-        mTextImgurl = (TextView)view.findViewById(R.id.textView_list_imgurl);
         my_bc_img = (ImageView)view.findViewById(R.id.my_bc_img);
         ct = inflater.getContext();
 
@@ -111,6 +108,8 @@ public class Fragment3 extends Fragment {
 
             }
         });
+
+
         return view;
     }
 
@@ -147,8 +146,10 @@ public class Fragment3 extends Fragment {
             Intent intent = new Intent(getActivity(),Login.class);
             startActivity(intent);
         }
+
         return super.onOptionsItemSelected(item);
     }
+
 
     private class GetData extends AsyncTask<String, Void, String>{
         ProgressDialog progressDialog;
@@ -161,6 +162,7 @@ public class Fragment3 extends Fragment {
             progressDialog = ProgressDialog.show( ct,
                     "Please Wait", null, true, true);
         }
+
 
         @Override
         protected void onPostExecute(String result) {
@@ -177,6 +179,7 @@ public class Fragment3 extends Fragment {
                 showResult();
             }
         }
+
 
         @Override
         //http 통신 및 해당 id에대한 정보를 가져옴
@@ -239,6 +242,8 @@ public class Fragment3 extends Fragment {
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+            byte[] deimgurl;
+            Bitmap debitmap=null;
             for(int i=0;i<jsonArray.length();i++){
                 JSONObject item = jsonArray.getJSONObject(i);
 
