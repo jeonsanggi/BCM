@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static  final int CAMERA_PERMISSION_REQUEST_CODE = 111;
     public static  final int READ_PERMISSION_REQUEST_CODE = 222;
     public static  final int WRITE_PERMISSION_REQUEST_CODE = 333;
+    public static  final int CAPURE_CAMERA = 444;
+    public static  final int CROP_PHOTO = 555;
 
     private  Uri mImageCaptureUri;
     private ImageView iv_UserPhoto;
@@ -147,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
                 }else{
-                    startActivityForResult(fintent,0);
+                    startActivityForResult(fintent,CAPURE_CAMERA);
                 }
             }else {
-                startActivityForResult(fintent, 0);
+                startActivityForResult(fintent, CAPURE_CAMERA);
             }
         }else{
             callFragment(FRAGMENT1);
@@ -344,10 +346,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
                         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
                     }else{
-                        startActivityForResult(intent,0);
+                        startActivityForResult(intent,CAPURE_CAMERA);
                     }
                 }else {
-                    startActivityForResult(intent, 0);
+                    startActivityForResult(intent, CAPURE_CAMERA);
                 }
                 break;
 
@@ -400,17 +402,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 transaction.commit();
                 break;
 
-            case 2:
-                // '프래그먼트2' 호출
-                /*Fragment2 fragment2 = new Fragment2();
-                if(fragment2 != null) {
-                    fragment2.setBitmap(bmp);
-                    fragment2.setString(ocrresult);
-                }
-                transaction.replace(R.id.fragment_container, fragment2);
-                transaction.commit();*/
-                break;
-
             case 3:
                 // '프래그먼트2' 호출
                 Fragment3 fragment3 = new Fragment3();
@@ -432,7 +423,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(resultCode != RESULT_OK){
             return;
         }
-        if(requestCode == 0) {
+        if(requestCode == CAPURE_CAMERA){
+            crop_photo();
+        }
+        if(requestCode == CROP_PHOTO) {
             Bitmap bitmap = BitmapFactory.decodeFile(mImageCaptureUri.getPath());
             ExifInterface exif = null;
 
@@ -480,10 +474,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             byte[] byteArray = stream.toByteArray();
 
             File f = new  File(mImageCaptureUri.getPath());
-            Bundle bundle = new Bundle();
-
             if(f.exists())
                 f.delete();
+
             Intent intent = new Intent(MainActivity.this, add.class);
             intent.putExtra("user_id",user_id);
             intent.putExtra("img",byteArray);
@@ -494,6 +487,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("ocr_result",result);
             startActivity(intent);
         }
+    }
+    public void crop_photo(){
+        Intent cropintent = new Intent("com.android.camera.action.CROP");
+        cropintent.setDataAndType(mImageCaptureUri,"image/*");
+        cropintent.putExtra("scale",true);
+        cropintent.putExtra("output",mImageCaptureUri);
+        startActivityForResult(cropintent, CROP_PHOTO);
     }
     public Bitmap resizeBitmapImg(Bitmap source){
         int width = source.getWidth();

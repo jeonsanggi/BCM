@@ -70,12 +70,13 @@ public class SignUp extends AppCompatActivity {
     private EditText mEditTextAddress;
     private ImageView imageView;
 
-    private static final String TAG_JSON="signupcheck";
+    private static final String TAG_JSON="webnautes";
     private static final String TAG_CHECK="check";
     public static  final int CAMERA_PERMISSION_REQUEST_CODE = 111;
     public static  final int READ_PERMISSION_REQUEST_CODE = 222;
     public static  final int WRITE_PERMISSION_REQUEST_CODE = 333;
-
+    public static  final int CAPURE_CAMERA = 444;
+    public static  final int CROP_PHOTO = 555;
     private Uri mImageCaptureUri;
     private Bitmap resizedBitmap;
     private Bitmap result_bitmap;
@@ -107,7 +108,6 @@ public class SignUp extends AppCompatActivity {
                 String tel = mEditTextTel.getText().toString();
                 String email = mEditTextEmail.getText().toString();
                 String address = mEditTextAddress.getText().toString();
-
                 Insert task = new Insert();
                 task.execute(id,password,company,name,phone,tel,email,address);
             }
@@ -133,10 +133,10 @@ public class SignUp extends AppCompatActivity {
                     if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
                         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
                     }else{
-                        startActivityForResult(intent,0);
+                        startActivityForResult(intent,CAPURE_CAMERA);
                     }
                 }else {
-                    startActivityForResult(intent, 0);
+                    startActivityForResult(intent, CAPURE_CAMERA);
                 }
             }
         });
@@ -145,11 +145,14 @@ public class SignUp extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String result="";
-        StringBuilder stringBuilder = new StringBuilder();
+
         if(resultCode != RESULT_OK){
             return;
         }
-        if(requestCode == 0) {
+        if(requestCode == CAPURE_CAMERA){
+            crop_photo();
+        }
+        if(requestCode == CROP_PHOTO) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
             Bitmap bitmap = BitmapFactory.decodeFile(mImageCaptureUri.getPath(),options);
@@ -193,12 +196,11 @@ public class SignUp extends AppCompatActivity {
                 }
             }
             String[] split_result = result.split("/");
-            //resizedBitmap = resizeBitmapImg(result_bitmap);
             imageView.setImageBitmap(result_bitmap);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             result_bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
             bytes = byteArrayOutputStream.toByteArray();
-            string_byte = Base64.encodeToString(bytes,Base64.DEFAULT);
+
             /* Pattern */
             String phonepattern = "(Moblie.?|M.?|Phone.?)?.(01[0-9]).(\\d{3,4}).(\\d{4})";
             String phonepattern2 = "(Moblie.?|M.?|Phone.?)?.([0-9]{2}).(\\d{2}).(\\d{3,4}).(\\d{4})";
@@ -307,38 +309,18 @@ public class SignUp extends AppCompatActivity {
                 }
             }
             mEditTextAddress.setText(add_result);
-
             File f = new  File(mImageCaptureUri.getPath());
-            Bundle bundle = new Bundle();
-            /*if(f.exists())
-                f.delete();*/
-
+            if(f.exists())
+                f.delete();
         }
     }
-    /*public Bitmap resizeBitmapImg(Bitmap source){
-        int width = source.getWidth();
-        int height = source.getHeight();
-        int newWidth = width;
-        int newHeight = height;
-        float rate = 0.0f;
-
-        if(width > height){
-            newWidth = 800;
-            newHeight = 500;
-        }else{
-            newWidth= 500;
-            newHeight = 500;
-        }
-
-        return Bitmap.createScaledBitmap(source, newWidth, newHeight, true);
-    }*/
-    /*public String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }*/
+    public void crop_photo(){
+        Intent cropintent = new Intent("com.android.camera.action.CROP");
+        cropintent.setDataAndType(mImageCaptureUri,"image/*");
+        cropintent.putExtra("scale",true);
+        cropintent.putExtra("output",mImageCaptureUri);
+        startActivityForResult(cropintent, CROP_PHOTO);
+    }
     private int exifOrientationToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
             return 90;
@@ -391,8 +373,10 @@ public class SignUp extends AppCompatActivity {
             String email = (String)params[6];
             String address = (String)params[7];
             String imgurl="url";
+            String is_imgdata="no";
             if(bytes!=null) {
                 imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
+                is_imgdata = "yes";
             }
 
             String lineEnd = "\r\n";
@@ -400,14 +384,11 @@ public class SignUp extends AppCompatActivity {
             String boundary = "****!@#*";
 
             String serverURL = "http://192.168.1.102/bcm/signup.php";
-            String postParameters = "id=" + id +"&password=" + password +"&company=" + company + "&name=" + name + "&phone=" + phone + "&tel=" + tel +"&email=" + email + "&address=" + address+"&img_string="+string_byte;
 
             try {
 
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                //httpURLConnection.setReadTimeout(5000);
-                //httpURLConnection.setConnectTimeout(5000);
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setUseCaches(false);
                 httpURLConnection.setRequestMethod("POST");
@@ -415,21 +396,26 @@ public class SignUp extends AppCompatActivity {
                 httpURLConnection.setRequestProperty("ENCTYPE", "multipart/form-data");
                 httpURLConnection.setRequestProperty("Connection","Keep-Alive");
                 httpURLConnection.setRequestProperty("Content-Type","multipart/form-data; charset=utf-8; boundary="+boundary);
-                httpURLConnection.setRequestProperty("uploaded_file", id);
 
                 DataOutputStream dos =
                         new DataOutputStream(httpURLConnection.getOutputStream());
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
 
+                if(bytes!=null) {
 
+                    dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\"" + id + ".jpg\"" + lineEnd);
+                    dos.writeBytes(lineEnd);
+                    dos.write(bytes, 0, bytes.length);
+                    dos.writeBytes(lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
 
-
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\""+id+".jpg\"" +lineEnd);
+                }
+                dos.writeBytes("Content-Disposition: form-data; name=\"is_imgdata\"" + lineEnd);
                 dos.writeBytes(lineEnd);
-
-                dos.write(bytes,0,bytes.length);
+                dos.writeBytes(is_imgdata);
                 dos.writeBytes(lineEnd);
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
+
                 dos.writeBytes("Content-Disposition: form-data; name=\"id\"" +lineEnd);
                 dos.writeBytes(lineEnd);
                 dos.writeBytes(id);
@@ -528,6 +514,7 @@ public class SignUp extends AppCompatActivity {
             String check = item.getString(TAG_CHECK);
             switch (check){
                 case "success":
+
                     Intent intent = new Intent(SignUp.this,Login.class);
                     startActivity(intent);
                     finish();
@@ -539,18 +526,17 @@ public class SignUp extends AppCompatActivity {
                 case "already":
                     Toast.makeText(getApplicationContext(),"이미 있는 아이디입니다.",Toast.LENGTH_SHORT).show();
                     break;
-                case "fid":
-                    Toast.makeText(getApplicationContext(),"아이디 또는 비밀번호를 확인해주세요",Toast.LENGTH_SHORT).show();
+                case "img_upload_error":
+                    Toast.makeText(getApplicationContext(),"img_upload_error 에러",Toast.LENGTH_SHORT).show();
                     break;
-                case "inputdata_error":
-                    Toast.makeText(getApplicationContext(),"에러",Toast.LENGTH_SHORT).show();
+                case "make_directory_error":
+                    Toast.makeText(getApplicationContext(),"make_directory_error 에러",Toast.LENGTH_SHORT).show();
+                    break;
+                case "null_value":
+                    Toast.makeText(getApplicationContext(),"null_value 에러",Toast.LENGTH_SHORT).show();
                     break;
             }
-          if(check.equals("success")){
-              Intent intent = new Intent(SignUp.this,Login.class);
-              startActivity(intent);
-              finish();
-          }
+
         } catch (JSONException e) {
 
             Log.d(TAG, "showResult : ", e);

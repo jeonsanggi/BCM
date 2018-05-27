@@ -109,7 +109,7 @@ public class Fragment1 extends Fragment {
         builder.setPositiveButton("예",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getContext(),MainActivity.class);
+                        Intent intent = new Intent(getActivity(),MainActivity.class);
                         intent.putExtra("user_id",user_id);
                         intent.putExtra("from","frag1");
                         startActivity(intent);
@@ -118,9 +118,10 @@ public class Fragment1 extends Fragment {
         builder.setNegativeButton("아니오",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getContext(),add.class);
+                        Intent intent = new Intent(getActivity(),add.class);
                         intent.putExtra("user_id",user_id);
                         intent.putExtra("from","frag1");
+                        intent.putExtra("imgurl","url");
                         intent.putExtra("check","list");
                         startActivity(intent);
                     }
@@ -248,7 +249,7 @@ public class Fragment1 extends Fragment {
                 hashMap.put(TAG_PHONE, phone);
                 hashMap.put(TAG_TEL, tel);
                 hashMap.put(TAG_EMAIL, email);
-                hashMap.put(TAG_ADDRESS, address);;
+                hashMap.put(TAG_ADDRESS, address);
 
 
                 mArrayList.add(hashMap);
