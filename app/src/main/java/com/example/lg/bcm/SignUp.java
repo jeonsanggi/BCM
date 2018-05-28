@@ -521,6 +521,7 @@ public class SignUp extends AppCompatActivity {
                 case "success":
 
                     Intent intent = new Intent(SignUp.this,Login.class);
+                    intent.putExtra("Logout", "SingUp");
                     startActivity(intent);
                     finish();
                     break;

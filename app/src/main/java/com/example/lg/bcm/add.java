@@ -214,14 +214,16 @@ public class add extends AppCompatActivity {
             matcher = pattern.matcher(result[i]);
             if (matcher.find()) {
                 phoneindex = i;
-                phonenum = matcher.group(0);
+                phonenum = result[i].replace(" ", "");
+                Log.v("matcher.group(0) ==", result[i].toString());
                 mEditTextPhone.setText(phonenum.trim());
             } else {
                 pattern = Pattern.compile(phonepattern2);
                 matcher = pattern.matcher(result[i]);
                 if (matcher.find()) {
                     phoneindex = i;
-                    phonenum = matcher.group(0);
+                    phonenum = result[i].replace(" ", "");
+                    Log.v("matcher.group(0) ==", result[i].toString());
                     mEditTextPhone.setText(phonenum);
                 }
             }

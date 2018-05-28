@@ -86,13 +86,13 @@ public class Nfc_Write extends Activity {
     private void write(String text, Tag tag) throws IOException, FormatException {
         NdefRecord[] records = { createRecord(text) };
         NdefMessage message = new NdefMessage(records);
-        // Get an instance of Ndef for the tag.
+        // Tag에 대한 Ndef의 인스턴스를 가져온다.
         Ndef ndef = Ndef.get(tag);
         // Enable I/O
         ndef.connect();
-        // Write the message
+        // 메시지 입력
         ndef.writeNdefMessage(message);
-        // Close the connection
+        // 연결 종료
         ndef.close();
     }
     private NdefRecord createRecord(String text) throws UnsupportedEncodingException {
