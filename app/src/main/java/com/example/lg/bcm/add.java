@@ -85,10 +85,7 @@ public class add extends AppCompatActivity {
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
         check = intent.getStringExtra("check");
-        if(intent.hasExtra("imgurl")) {
-            inimgurl = intent.getStringExtra("imgurl");
-        }
-
+        inimgurl = intent.getStringExtra("imgurl");
         if(intent.hasExtra("from")) {
             from = intent.getStringExtra("from");
         }
@@ -229,6 +226,11 @@ public class add extends AppCompatActivity {
                 }
             }
         }
+        if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
+            inimgurl = "http://192.168.1.102/bcm/"+user_id+"/"+phonenum+".jpg";
+        }else if(from.equals("ocr")&&check.equals("mypage")) {
+            inimgurl = "http://192.168.1.102/bcm/"+user_id+"/"+user_id+".jpg";
+        }
         /*Get Tel*/
         for (int i = 0; i < result.length; i++) {
             pattern = Pattern.compile(telpattern);
@@ -265,6 +267,9 @@ public class add extends AppCompatActivity {
                 pattern = Pattern.compile(telpattern2);
                 matcher = pattern.matcher(result[i]);
                 int j = matcher.groupCount();
+                if(j==1){
+                    mEditTextTel.setText(matcher.group(0));
+                }
                 if(j==2){
                     if(!matcher.group(0).equals(phonenum)){
                         telindex = i;
@@ -368,7 +373,7 @@ public class add extends AppCompatActivity {
             String tel = (String) params[4];
             String email = (String) params[5];
             String address = (String) params[6];
-            String imgurl = (String) params[7];
+            String imgurl = (String ) params[7];
             String is_imgdata="";
             String aleary_img="";
             String update_table = "user";
@@ -376,7 +381,6 @@ public class add extends AppCompatActivity {
             Log.v("add 에서의 태그값은 :", name);
             if (check.equals("list")) {
                 serverURL = "http://192.168.1.102/bcm/insert.php";
-                inimgurl =  "http://192.168.1.102/bcm/insert.php";
             } else if (check.equals("mypage")||check.equals("list_update")) {
                 serverURL = "http://192.168.1.102/bcm/update.php";
                 if(imgurl.equals("url")){

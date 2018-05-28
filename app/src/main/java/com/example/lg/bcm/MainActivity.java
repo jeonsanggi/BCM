@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.Image;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
@@ -33,6 +34,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView iv_UserPhoto;
     private String absoultePath;
 
-    private Button bt_tab1, bt_tab2, bt_tab3;
+    private ImageView bt_tab1, bt_tab2, bt_tab3;
     ///////////////////
     private Bitmap bmp;
     /////
@@ -116,9 +118,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             from = intent.getStringExtra("from");
         }
 
-        bt_tab1 = (Button)findViewById(R.id.bt_tab1);
-        bt_tab2 = (Button)findViewById(R.id.bt_tab2);
-        bt_tab3 = (Button)findViewById(R.id.bt_tab3);
+        bt_tab1 = (ImageView)findViewById(R.id.bt_tab1);
+        bt_tab2 = (ImageView)findViewById(R.id.bt_tab2);
+        bt_tab3 = (ImageView)findViewById(R.id.bt_tab3);
 
 
         // 탭 버튼에 대한 리스너 연결
@@ -132,28 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(from!=null&&from.equals("add")){
             callFragment(FRAGMENT3);
         }else if(from!=null&&from.equals("frag1")){
-            Intent fintent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-            mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-            fintent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-            if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-                int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
-                int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
-                }
-                if(readstoragePermissionResult== PackageManager.PERMISSION_DENIED){
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
-                }
-                if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
-                }else{
-                    startActivityForResult(fintent,CAPURE_CAMERA);
-                }
-            }else {
-                startActivityForResult(fintent, CAPURE_CAMERA);
-            }
+            startCamera();
         }else{
             callFragment(FRAGMENT1);
         }
@@ -181,6 +162,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         writeTagFilters = new IntentFilter[] { tagDetected };
 
 
+    }
+    public void startCamera(){
+        Intent fintent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+        mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+        fintent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+        //권한 확인
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
+            int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+            int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+            }
+            if(readstoragePermissionResult== PackageManager.PERMISSION_DENIED){
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
+            }
+            if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
+            }else{
+                startActivityForResult(fintent,CAPURE_CAMERA);
+            }
+        }else {
+            startActivityForResult(fintent, CAPURE_CAMERA);
+        }
     }
 
     private void readFromIntent(Intent intent) {
@@ -329,28 +335,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_tab2 :
                 // '버튼2' 클릭 시 '프래그먼트2' 호출
                 //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-                mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-                    int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
-                    int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                    int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                    if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
-                    }
-                    if(readstoragePermissionResult== PackageManager.PERMISSION_DENIED){
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
-                    }
-                    if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
-                    }else{
-                        startActivityForResult(intent,CAPURE_CAMERA);
-                    }
-                }else {
-                    startActivityForResult(intent, CAPURE_CAMERA);
-                }
+                startCamera();
                 break;
 
             case R.id.bt_tab3 :
@@ -484,6 +469,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("check","list");
             intent.putExtra("company",company);
             intent.putExtra("name",name);
+            intent.putExtra("imgurl","url");
             intent.putExtra("ocr_result",result);
             startActivity(intent);
         }

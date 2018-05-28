@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/testbitmap"/>
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_container"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_above="@+id/linearLayout" />
+    android:background="#fff">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_alignParentBottom="true"
+    android:background="@drawable/buttonbar"
+    android:gravity="center"
+    android:orientation="horizontal">
 
-        <Button
+        <ImageView
             android:id="@+id/bt_tab1"
-            android:layout_width="69dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:layout_weight="1"
-            android:background="@drawable/card" />
+            android:src="@drawable/card" />
 
-        <Button
+        <ImageView
             android:id="@+id/bt_tab2"
-            android:layout_width="69dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:layout_weight="1"
-            android:background="@drawable/camera" />
+            android:background="@drawable/image_button"
+            android:scaleType="centerInside"
+            android:src="@drawable/shutter" />
 
-        <Button
+        <ImageView
             android:id="@+id/bt_tab3"
-            android:layout_width="69dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:background="@drawable/person" />
+            android:src="@drawable/person" />
 
     </LinearLayout>
-
 </RelativeLayout>

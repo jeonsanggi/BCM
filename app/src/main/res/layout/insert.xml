@@ -12,6 +12,7 @@
             android:layout_width="300dp"
             android:layout_height="200dp"
             android:id="@+id/imgView"
+            android:background="@drawable/image_frame"
             android:scaleType="centerInside"
             android:layout_gravity="center_horizontal"/>
         <TextView

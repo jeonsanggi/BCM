@@ -247,7 +247,9 @@ public class SignUp extends AppCompatActivity {
                 matcher = pattern.matcher(split_result[i]);
                 if(matcher.find()){
                     int j = matcher.groupCount();
-
+                    if(j==1){
+                        mEditTextTel.setText(matcher.group(0));
+                    }
                     if(j==2){
                         if(!matcher.group(0).equals(phonenum)){
                             mEditTextTel.setText(matcher.group(0));
@@ -275,6 +277,9 @@ public class SignUp extends AppCompatActivity {
                     pattern = Pattern.compile(telpattern2);
                     matcher = pattern.matcher(split_result[i]);
                     int j = matcher.groupCount();
+                    if(j==1){
+                        mEditTextTel.setText(matcher.group(0));
+                    }
                     if(j==2){
                         if(!matcher.group(0).equals(phonenum)){
                             telindex = i;
