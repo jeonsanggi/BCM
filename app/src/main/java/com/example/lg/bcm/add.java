@@ -135,6 +135,12 @@ public class add extends AppCompatActivity {
                 intel = mEditTextTel.getText().toString();
                 inemail = mEditTextEmail.getText().toString();
                 inaddress = mEditTextAddress.getText().toString();
+
+                if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+inphone+".jpg";
+                }else if(check.equals("mypage")) {
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+                }
                 InsertData task = new InsertData();
                 task.execute(user_id,incompany,inname,inphone,intel,inemail,inaddress,inimgurl);
             }
@@ -214,25 +220,23 @@ public class add extends AppCompatActivity {
             matcher = pattern.matcher(result[i]);
             if (matcher.find()) {
                 phoneindex = i;
-                phonenum = result[i].replace(" ", "");
-                Log.v("matcher.group(0) ==", result[i].toString());
+                phonenum = matcher.group(0).replace(" ", "");
+                phonenum = phonenum.replace("+", "");
+                        Log.v("matcher.group(0) ==", result[i].toString());
                 mEditTextPhone.setText(phonenum.trim());
             } else {
                 pattern = Pattern.compile(phonepattern2);
                 matcher = pattern.matcher(result[i]);
                 if (matcher.find()) {
                     phoneindex = i;
-                    phonenum = result[i].replace(" ", "");
+                    phonenum = matcher.group(0).replace(" ", "");
+                    phonenum = phonenum.replace("+", "");
                     Log.v("matcher.group(0) ==", result[i].toString());
                     mEditTextPhone.setText(phonenum);
                 }
             }
         }
-        if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-            inimgurl = "http://192.168.1.102/bcm/"+user_id+"/"+phonenum+".jpg";
-        }else if(from.equals("ocr")&&check.equals("mypage")) {
-            inimgurl = "http://192.168.1.102/bcm/"+user_id+"/"+user_id+".jpg";
-        }
+
         /*Get Tel*/
         for (int i = 0; i < result.length; i++) {
             pattern = Pattern.compile(telpattern);
@@ -316,6 +320,7 @@ public class add extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
 
+
         //저장 button 클릭시 수정한 정보들을 전송
         if(id == R.id.done){
             incompany = mEditTextCompany.getText().toString();
@@ -324,7 +329,11 @@ public class add extends AppCompatActivity {
             intel = mEditTextTel.getText().toString();
             inemail = mEditTextEmail.getText().toString();
             inaddress = mEditTextAddress.getText().toString();
-
+            if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
+                inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+inphone+".jpg";
+            }else if(check.equals("mypage")) {
+                inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+            }
             InsertData task = new InsertData();
             task.execute(user_id,incompany,inname,inphone,intel,inemail,inaddress,inimgurl);
 

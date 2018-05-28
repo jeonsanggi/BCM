@@ -79,16 +79,13 @@ public class List_show extends AppCompatActivity {
         mTextemail.setText(email);
         mTextaddress.setText(address);
 
-
-        byte[] deimgurl;
-        Bitmap debitmap = null;
-        Thread mThread = new Thread() {
+        Thread mThread = new Thread(){
             @Override
-            public void run() {
-                try {
+            public void run(){
+                try{
                     URL url = new URL(imgurl);
 
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    HttpURLConnection conn= (HttpURLConnection)url.openConnection();
                     conn.setDoInput(true);
                     conn.connect();
                     InputStream is = conn.getInputStream();

@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.e("UnsupportedEncoding", e.toString());
         }
 
-        String[] array = text.split("\n");
+        String[] array = text.split("\\*\\*\\*");
 
         String company = array[1];
         String name = array[2];

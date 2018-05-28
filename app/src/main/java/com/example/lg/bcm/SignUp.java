@@ -229,14 +229,16 @@ public class SignUp extends AppCompatActivity {
                 matcher = pattern.matcher(split_result[i]);
                 if (matcher.find()) {
                     phoneindex = i;
-                    phonenum = matcher.group(0);
+                    phonenum = matcher.group(0).replace(" ","");
+                    phonenum = phonenum.replace("+", "");
                     mEditTextPhone.setText(phonenum);
                 } else {
                     pattern = Pattern.compile(phonepattern2);
                     matcher = pattern.matcher(split_result[i]);
                     if (matcher.find()) {
                         phoneindex = i;
-                        phonenum = matcher.group(0);
+                        phonenum = matcher.group(0).replace(" ","");
+                        phonenum = phonenum.replace("+", "");
                         mEditTextPhone.setText(phonenum);
                     }
                 }

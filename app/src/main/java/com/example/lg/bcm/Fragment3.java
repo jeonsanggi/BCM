@@ -102,7 +102,7 @@ public class Fragment3 extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),Nfc_Write.class);
-                String Parameters = user_id +"\n" + company + "\n" + name + "\n" + phone + "\n" + tel +"\n" + email + "\n" + address+"\n" + imgurl;
+                String Parameters = user_id +"***" + company + "***" + name + "***" + phone + "***" + tel +"***" + email + "***" + address+"***" + imgurl;
 
                 intent.putExtra("Parameters", Parameters);
                 startActivityForResult(intent, 1);
