@@ -89,6 +89,7 @@ public class add extends AppCompatActivity {
         spinner4=(Spinner)findViewById(R.id.spinner4);
         spinner5=(Spinner)findViewById(R.id.spinner5);
         spinner6=(Spinner)findViewById(R.id.spinner6);
+        //spiner init set
         spiiner_init();
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
@@ -153,7 +154,7 @@ public class add extends AppCompatActivity {
 
                 if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
                     inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
-                }else if(check.equals("mypage")) {
+                }else if(from.equals("ocr")&&check.equals("mypage")) {
                     inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                 }
                 InsertData task = new InsertData();
@@ -339,7 +340,7 @@ public class add extends AppCompatActivity {
             String address=spinner_position[5];
             if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
                 inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
-            }else if(check.equals("mypage")) {
+            }else if(from.equals("ocr")&&check.equals("mypage")) {
                 inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
             }
             InsertData task = new InsertData();
@@ -415,12 +416,13 @@ public class add extends AppCompatActivity {
 
             try {
 
-                URL url = new URL(serverURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setUseCaches(false);
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoInput(true);
+                URL url = new URL(serverURL); //서버 URL CLASS 생성
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(); //URL연결
+                httpURLConnection.setDoOutput(true);         // 쓰기 모드 True
+                httpURLConnection.setUseCaches(false);       // 캐싱 데이터 사용 False
+                httpURLConnection.setRequestMethod("POST");  // POST방식 통신
+                httpURLConnection.setDoInput(true);          // 읽기 모드 True
+                //Request Header 설정
                 httpURLConnection.setRequestProperty("ENCTYPE", "multipart/form-data");
                 httpURLConnection.setRequestProperty("Connection", "Keep-Alive");
                 httpURLConnection.setRequestProperty("Content-Type", "multipart/form-data; charset=utf-8; boundary=" + boundary);
@@ -558,8 +560,8 @@ public class add extends AppCompatActivity {
 
             JSONObject item = jsonArray.getJSONObject(0);
 
-            String check = item.getString(TAG_CHECK);
-            switch (check){
+            String tag_check = item.getString(TAG_CHECK);
+            switch (tag_check){
                 case "success":
                     Intent intent = new Intent(add.this, MainActivity.class);
                     intent.putExtra("user_id",user_id);

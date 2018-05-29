@@ -49,7 +49,7 @@ public class List_show extends AppCompatActivity {
 
     protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_fragment3);
+        setContentView(R.layout.list_show);
 
         mTextcompany = (TextView) findViewById(R.id.textView_list_company);
         mTextname = (TextView) findViewById(R.id.textView_list_name);
