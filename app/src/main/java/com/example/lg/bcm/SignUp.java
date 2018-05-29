@@ -16,16 +16,21 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.renderscript.ScriptGroup;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,9 +77,6 @@ public class SignUp extends AppCompatActivity {
 
     private static final String TAG_JSON="webnautes";
     private static final String TAG_CHECK="check";
-    public static  final int CAMERA_PERMISSION_REQUEST_CODE = 111;
-    public static  final int READ_PERMISSION_REQUEST_CODE = 222;
-    public static  final int WRITE_PERMISSION_REQUEST_CODE = 333;
     public static  final int CAPURE_CAMERA = 444;
     public static  final int CROP_PHOTO = 555;
     private Uri mImageCaptureUri;
@@ -83,7 +85,12 @@ public class SignUp extends AppCompatActivity {
     private String string_byte;
     private byte[] bytes;
     String mJsonString;
-    String[] spinnerList = {"Company","Name","Phone","Tel","Address","Email"};
+    Spinner spinner1;
+    Spinner spinner2;
+    Spinner spinner3;
+    Spinner spinner4;
+    Spinner spinner5;
+    Spinner spinner6;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
@@ -96,19 +103,35 @@ public class SignUp extends AppCompatActivity {
         mEditTextEmail = (EditText)findViewById(R.id.signup_email);
         mEditTextAddress = (EditText)findViewById(R.id.signup_address);
         imageView = (ImageView)findViewById(R.id.signup_imgView);
-
+        spinner1=(Spinner)findViewById(R.id.spinner1);
+        spinner2=(Spinner)findViewById(R.id.spinner2);
+        spinner3=(Spinner)findViewById(R.id.spinner3);
+        spinner4=(Spinner)findViewById(R.id.spinner4);
+        spinner5=(Spinner)findViewById(R.id.spinner5);
+        spinner6=(Spinner)findViewById(R.id.spinner6);
+        spiiner_init();
         Button buttonInsert = (Button)findViewById(R.id.signup_bt);
         buttonInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String id = mEdittextId.getText().toString();
-                String password = mEditPassword.getText().toString();
-                String company = mEditTextCompany.getText().toString();
-                String name = mEditTextName.getText().toString();
-                String phone = mEditTextPhone.getText().toString();
-                String tel = mEditTextTel.getText().toString();
-                String email = mEditTextEmail.getText().toString();
-                String address = mEditTextAddress.getText().toString();
+
+                String[] spinner_position = new String[6];
+                spinner_position[spinner1.getSelectedItemPosition()]=mEditTextCompany.getText().toString();
+                spinner_position[spinner2.getSelectedItemPosition()]=mEditTextName.getText().toString();
+                spinner_position[spinner3.getSelectedItemPosition()]=mEditTextPhone.getText().toString();
+                spinner_position[spinner4.getSelectedItemPosition()]=mEditTextTel.getText().toString();
+                spinner_position[spinner5.getSelectedItemPosition()]=mEditTextEmail.getText().toString();
+                spinner_position[spinner6.getSelectedItemPosition()]=mEditTextAddress.getText().toString();
+
+                String id=mEdittextId.getText().toString();
+                String password=mEditPassword.getText().toString();
+                String company=spinner_position[0];
+                String name=spinner_position[1];
+                String phone=spinner_position[2];
+                String tel=spinner_position[3];
+                String email=spinner_position[4];
+                String address=spinner_position[5];;
+
                 Insert task = new Insert();
                 task.execute(id,password,company,name,phone,tel,email,address);
             }
@@ -117,30 +140,58 @@ public class SignUp extends AppCompatActivity {
         camera_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //기본 내장 되어있는 카메라를 사용하기위한 INTENT
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+                //사진촬영시 원본파일 임시저장 경로 받아오기
                 mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+                //카메라, 외부저장소 읽기/쓰기, 전화 권한 검사 및 획득
                 if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-                    int cameraPermissionResult = checkSelfPermission(Manifest.permission.CAMERA);
-                    int readstoragePermissionResult = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                    int writestoragePermissionResult = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                    if (cameraPermissionResult == PackageManager.PERMISSION_DENIED) {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+                    if(ContextCompat.checkSelfPermission(SignUp.this,Manifest.permission.CAMERA)!=PackageManager.PERMISSION_GRANTED||
+                            ContextCompat.checkSelfPermission(SignUp.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED||
+                            ContextCompat.checkSelfPermission(SignUp.this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED||
+                            ContextCompat.checkSelfPermission(SignUp.this,Manifest.permission.CALL_PHONE)!=PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(SignUp.this,new String[]{Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.CALL_PHONE},1);
                     }
-                    if(readstoragePermissionResult== PackageManager.PERMISSION_DENIED){
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST_CODE);
-                    }
-                    if(writestoragePermissionResult== PackageManager.PERMISSION_DENIED){
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST_CODE);
-                    }else{
-                        startActivityForResult(intent,CAPURE_CAMERA);
-                    }
+                    // 카메라 실행
+                    startActivityForResult(intent,CAPURE_CAMERA);
                 }else {
                     startActivityForResult(intent, CAPURE_CAMERA);
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1:
+                if(!(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)){
+                    Toast.makeText(this,"권한을 허용해야 명함촬영이 가능합니다,",Toast.LENGTH_SHORT);
+                }
+        }
+    }
+    void spiiner_init(){
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this,R.array.option,android.R.layout.simple_dropdown_item_1line);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter);
+        spinner1.setSelection(0);
+        spinner2.setAdapter(adapter);
+        spinner2.setSelection(1);
+        spinner3.setAdapter(adapter);
+        spinner3.setSelection(2);
+        spinner4.setAdapter(adapter);
+        spinner4.setSelection(3);
+        spinner5.setAdapter(adapter);
+        spinner5.setSelection(4);
+        spinner6.setAdapter(adapter);
+        spinner6.setSelection(5);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -174,13 +225,17 @@ public class SignUp extends AppCompatActivity {
             } else {
                 exifDegree = 0;
             }
+            //임시저장된 원본파일을 bitmap으로 변환 및 회전
             result_bitmap = (rotate(bitmap,exifDegree));
+            //구글에서 재공하는 vision API중 TextRecognizer를 이용하여 글자 추출
             TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
             if (!txtRecognizer.isOperational()) {
             } else {
+                //Fram에 촬영한 사진 set
                 Frame frame = new Frame.Builder().setBitmap(result_bitmap).build();
+                // TextRecognizer로 추출한 TEXTBLOCK들을 SparseArray에 저장
                 SparseArray items = txtRecognizer.detect(frame);
-                Log.d("length",items.size()+"");
+                //각 블럭들을 라인으로 나눔
                 for (int i = 0; i < items.size(); i++) {
                     TextBlock item = (TextBlock) items.valueAt(i);
                     if (i == 0) {
@@ -358,7 +413,7 @@ public class SignUp extends AppCompatActivity {
             String imgurl="url";
             String is_imgdata="no";
             if(bytes!=null) {
-                imgurl = "http://192.168.202.73/bcm/users_dir/" + id + "/" + id + ".jpg";
+                imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
                 is_imgdata = "yes";
             }
 

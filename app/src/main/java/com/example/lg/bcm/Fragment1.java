@@ -95,7 +95,7 @@ public class Fragment1 extends Fragment {
         ct = inflater.getContext();
         GetData task = new GetData();
 
-        task.execute("http://192.168.202.73/bcm/getBCList.php");
+        task.execute("http://192.168.1.102/bcm/getBCList.php");
         insert_bc_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -12,10 +12,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,16 +58,16 @@ public class add extends AppCompatActivity {
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
     private TextView mEditTextImgurl;
+    private Spinner spinner1;
+    private Spinner spinner2;
+    private Spinner spinner3;
+    private Spinner spinner4;
+    private Spinner spinner5;
+    private Spinner spinner6;
     private ImageView imgview;
     private String inimgurl="url";
     private String old_phone="";
     private String mJsonString;
-    private String incompany ;
-    private String inname ;
-    private String inphone;
-    private String intel ;
-    private String inemail ;
-    private String inaddress ;
     private String user_id;
     private String from="";
     private String check="";
@@ -81,7 +83,13 @@ public class add extends AppCompatActivity {
         mEditTextEmail = (EditText) findViewById(R.id.editText_main_email);
         mEditTextAddress = (EditText) findViewById(R.id.editText_main_address);
         imgview = (ImageView) findViewById(R.id.imgView);
-
+        spinner1=(Spinner)findViewById(R.id.spinner1);
+        spinner2=(Spinner)findViewById(R.id.spinner2);
+        spinner3=(Spinner)findViewById(R.id.spinner3);
+        spinner4=(Spinner)findViewById(R.id.spinner4);
+        spinner5=(Spinner)findViewById(R.id.spinner5);
+        spinner6=(Spinner)findViewById(R.id.spinner6);
+        spiiner_init();
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
         check = intent.getStringExtra("check");
@@ -128,27 +136,50 @@ public class add extends AppCompatActivity {
         buttonInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String[] spinner_position = new String[6];
+                spinner_position[spinner1.getSelectedItemPosition()]=mEditTextCompany.getText().toString();
+                spinner_position[spinner2.getSelectedItemPosition()]=mEditTextName.getText().toString();
+                spinner_position[spinner3.getSelectedItemPosition()]=mEditTextPhone.getText().toString();
+                spinner_position[spinner4.getSelectedItemPosition()]=mEditTextTel.getText().toString();
+                spinner_position[spinner5.getSelectedItemPosition()]=mEditTextEmail.getText().toString();
+                spinner_position[spinner6.getSelectedItemPosition()]=mEditTextAddress.getText().toString();
 
-                incompany = mEditTextCompany.getText().toString();
-                inname = mEditTextName.getText().toString();
-                inphone = mEditTextPhone.getText().toString();
-                intel = mEditTextTel.getText().toString();
-                inemail = mEditTextEmail.getText().toString();
-                inaddress = mEditTextAddress.getText().toString();
+                String company=spinner_position[0];
+                String name=spinner_position[1];
+                String phone=spinner_position[2];
+                String tel=spinner_position[3];
+                String email=spinner_position[4];
+                String address=spinner_position[5];
 
                 if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+inphone+".jpg";
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
                 }else if(check.equals("mypage")) {
                     inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                 }
                 InsertData task = new InsertData();
-                task.execute(user_id,incompany,inname,inphone,intel,inemail,inaddress,inimgurl);
+                task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
             }
         });
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+    }
+    void spiiner_init(){
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this,R.array.option,android.R.layout.simple_dropdown_item_1line);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter);
+        spinner1.setSelection(0);
+        spinner2.setAdapter(adapter);
+        spinner2.setSelection(1);
+        spinner3.setAdapter(adapter);
+        spinner3.setSelection(2);
+        spinner4.setAdapter(adapter);
+        spinner4.setSelection(3);
+        spinner5.setAdapter(adapter);
+        spinner5.setSelection(4);
+        spinner6.setAdapter(adapter);
+        spinner6.setSelection(5);
     }
     public void draw_ing(){
             Thread mThread = new Thread(){
@@ -292,19 +323,27 @@ public class add extends AppCompatActivity {
 
         //저장 button 클릭시 수정한 정보들을 전송
         if(id == R.id.done){
-            incompany = mEditTextCompany.getText().toString();
-            inname = mEditTextName.getText().toString();
-            inphone = mEditTextPhone.getText().toString();
-            intel = mEditTextTel.getText().toString();
-            inemail = mEditTextEmail.getText().toString();
-            inaddress = mEditTextAddress.getText().toString();
+            String[] spinner_position = new String[6];
+            spinner_position[spinner1.getSelectedItemPosition()]=mEditTextCompany.getText().toString();
+            spinner_position[spinner2.getSelectedItemPosition()]=mEditTextName.getText().toString();
+            spinner_position[spinner3.getSelectedItemPosition()]=mEditTextPhone.getText().toString();
+            spinner_position[spinner4.getSelectedItemPosition()]=mEditTextTel.getText().toString();
+            spinner_position[spinner5.getSelectedItemPosition()]=mEditTextEmail.getText().toString();
+            spinner_position[spinner6.getSelectedItemPosition()]=mEditTextAddress.getText().toString();
+
+            String company=spinner_position[0];
+            String name=spinner_position[1];
+            String phone=spinner_position[2];
+            String tel=spinner_position[3];
+            String email=spinner_position[4];
+            String address=spinner_position[5];
             if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-                inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+inphone+".jpg";
+                inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
             }else if(check.equals("mypage")) {
                 inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
             }
             InsertData task = new InsertData();
-            task.execute(user_id,incompany,inname,inphone,intel,inemail,inaddress,inimgurl);
+            task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
 
 
         }
@@ -360,9 +399,9 @@ public class add extends AppCompatActivity {
 
             Log.v("add 에서의 태그값은 :", name);
             if (check.equals("list")) {
-                serverURL = "http://192.168.202.73/bcm/insert.php";
+                serverURL = "http://192.168.1.102/bcm/insert.php";
             } else if (check.equals("mypage")||check.equals("list_update")) {
-                serverURL = "http://192.168.202.73/bcm/update.php";
+                serverURL = "http://192.168.1.102/bcm/update.php";
                 if(imgurl.equals("url")){
                     aleary_img = "no";
                 }else{

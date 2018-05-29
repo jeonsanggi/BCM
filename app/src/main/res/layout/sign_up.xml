@@ -37,7 +37,6 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-
                 android:text="아이디"/>
             <EditText
                 android:id="@+id/signup_id"
@@ -78,11 +77,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
-
+            <Spinner
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="회사"/>
+                android:id="@+id/spinner1"
+                />
             <EditText
                 android:id="@+id/signup_company"
                 android:layout_width="match_parent"
@@ -92,11 +91,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
-
+            <Spinner
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="이름"/>
+                android:id="@+id/spinner2"
+                />
             <EditText
                 android:id="@+id/signup_name"
                 android:layout_width="match_parent"
@@ -106,11 +105,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
-
+            <Spinner
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="휴대전화"/>
+                android:id="@+id/spinner3"
+                />
             <EditText
                 android:id="@+id/signup_phone"
                 android:layout_width="match_parent"
@@ -120,11 +119,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
-
+            <Spinner
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="전화"/>
+                android:id="@+id/spinner4"
+                />
             <EditText
                 android:id="@+id/signup_tel"
                 android:layout_width="match_parent"
@@ -134,11 +133,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
-
+            <Spinner
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="이메일"/>
+                android:id="@+id/spinner5"
+                />
             <EditText
                 android:id="@+id/signup_email"
                 android:layout_width="match_parent"
@@ -148,10 +147,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
+            <Spinner
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="주소"/>
+                android:id="@+id/spinner6"
+                />
             <EditText
                 android:id="@+id/signup_address"
                 android:layout_width="match_parent"

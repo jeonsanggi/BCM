@@ -15,66 +15,66 @@
             android:background="@drawable/image_frame"
             android:scaleType="centerInside"
             android:layout_gravity="center_horizontal"/>
-        <TextView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Company"
-            android:id="@+id/textView_main_company" />
+            android:id="@+id/spinner1"
+            />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editText_main_company" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Name"
-            android:id="@+id/textView_main_name" />
+            android:id="@+id/spinner2"
+            />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editText_main_name" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Phone"
-            android:id="@+id/textView_main_phone" />
+            android:id="@+id/spinner3"
+            />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editText_main_phone" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Tel"
-            android:id="@+id/textView_main_tel" />
+            android:id="@+id/spinner4"
+            />
 
         <EditText
             android:id="@+id/editText_main_tel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Email"
-            android:id="@+id/textView_main_email" />
+            android:id="@+id/spinner5"
+            />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editText_main_email" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Address"
-            android:id="@+id/textView_main_address" />
+            android:id="@+id/spinner6"
+            />
 
         <EditText
             android:layout_width="match_parent"
