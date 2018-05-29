@@ -83,6 +83,7 @@ public class SignUp extends AppCompatActivity {
     private String string_byte;
     private byte[] bytes;
     String mJsonString;
+    String[] spinnerList = {"Company","Name","Phone","Tel","Address","Email"};
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
@@ -213,6 +214,7 @@ public class SignUp extends AppCompatActivity {
             Pattern pattern;
             Matcher matcher;
             String phonenum="";
+            String phonenum1="";
 
         /*Get Email*/
             pattern = Pattern.compile(emailpattern);
@@ -228,85 +230,59 @@ public class SignUp extends AppCompatActivity {
                 pattern = Pattern.compile(phonepattern);
                 matcher = pattern.matcher(split_result[i]);
                 if (matcher.find()) {
-                    phoneindex = i;
-                    phonenum = matcher.group(0).replace(" ","");
-                    phonenum = phonenum.replace("+", "");
-                    mEditTextPhone.setText(phonenum);
+                    while(matcher.find()) {
+                        phoneindex = i;
+                        phonenum1 = matcher.group(0);
+                        phonenum = matcher.group(0).replace(" ", "");
+                        phonenum = phonenum.replace("+", "");
+                        mEditTextPhone.setText(phonenum);
+                    }
                 } else {
                     pattern = Pattern.compile(phonepattern2);
                     matcher = pattern.matcher(split_result[i]);
-                    if (matcher.find()) {
+                    while (matcher.find()) {
                         phoneindex = i;
+                        phonenum1 =matcher.group(0);
                         phonenum = matcher.group(0).replace(" ","");
                         phonenum = phonenum.replace("+", "");
                         mEditTextPhone.setText(phonenum);
                     }
                 }
             }
-        /*Get Tel*/
+            String t="";
+            String tmptell="";
             for (int i = 0; i < split_result.length; i++) {
                 pattern = Pattern.compile(telpattern);
                 matcher = pattern.matcher(split_result[i]);
                 if(matcher.find()){
-                    int j = matcher.groupCount();
-                    if(j==1){
-                        mEditTextTel.setText(matcher.group(0));
-                    }
-                    if(j==2){
-                        if(!matcher.group(0).equals(phonenum)){
-                            mEditTextTel.setText(matcher.group(0));
+                    while(matcher.find()) {
+                        if (!matcher.group(0).equals(phonenum1)) {
                             telindex = i;
-                        }else if(!matcher.group(1).equals(phonenum)){
-                            mEditTextTel.setText(matcher.group(1));
-                            telindex = i;
-                        }
-                    }else if(j==3){
-                        if(matcher.group(0).equals(phonenum)){
-                            mEditTextTel.setText(matcher.group(1));
-                            telindex = i;
-
-                        }else if(matcher.group(1).equals(phonenum)){
-                            mEditTextTel.setText(matcher.group(0));
-                            telindex = i;
-
-                        }else if(matcher.group(2).equals(phonenum)){
-                            mEditTextTel.setText(matcher.group(0));
-                            telindex = i;
-
+                            t = matcher.group().replace(" ", "");
+                            t = t.replace("+", "");
+                            mEditTextTel.setText(t);
                         }
                     }
                 }else{
+                    int j=0;
                     pattern = Pattern.compile(telpattern2);
                     matcher = pattern.matcher(split_result[i]);
-                    int j = matcher.groupCount();
-                    if(j==1){
-                        mEditTextTel.setText(matcher.group(0));
-                    }
-                    if(j==2){
-                        if(!matcher.group(0).equals(phonenum)){
+                    while(matcher.find()){
+                        Log.v("matcher.group(0) ==", split_result[i].toString());
+                        Log.v("matcher.group(0) ==", matcher.group(0));
+                        if(!matcher.group(0).equals(phonenum1)){
                             telindex = i;
-                            mEditTextTel.setText(matcher.group(0));
-                        }else if(!matcher.group(1).equals(phonenum)){
-                            telindex = i;
-                            mEditTextTel.setText(matcher.group(1));
-                        }
-                    }else if(j==3){
-                        if(matcher.group(0).equals(phonenum)){
-                            telindex = i;
-                            mEditTextTel.setText(matcher.group(1));
-
-                        }else if(matcher.group(1).equals(phonenum)){
-                            telindex = i;
-                            mEditTextTel.setText(matcher.group(0));
-
-                        }else if(matcher.group(2).equals(phonenum)){
-                            telindex = i;
-                            mEditTextTel.setText(matcher.group(0));
+                            t = matcher.group().replace(" ","");
+                            t = t.replace("+","");
+                            mEditTextTel.setText(t);
 
                         }
                     }
                 }
             }
+            Log.v("Tmptell",mEditTextTel.getText().toString());
+            Log.d("Tmptell",mEditTextTel.getText().toString());
+            Log.i("Tmptell",mEditTextTel.getText().toString());
             String add_result="";
             for(int i=0;i<split_result.length;i++){
                 if(i==emailindex|i==telindex|i==phoneindex)
@@ -382,7 +358,7 @@ public class SignUp extends AppCompatActivity {
             String imgurl="url";
             String is_imgdata="no";
             if(bytes!=null) {
-                imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
+                imgurl = "http://192.168.202.73/bcm/users_dir/" + id + "/" + id + ".jpg";
                 is_imgdata = "yes";
             }
 

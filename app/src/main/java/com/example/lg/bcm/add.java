@@ -189,10 +189,10 @@ public class add extends AppCompatActivity {
         }
 
          /* Pattern */
-        String phonepattern = "(Moblie.?|M.?|Phone.?)?.(01[0-9]).(\\d{3,4}).(\\d{4})";
-        String phonepattern2 = "(Moblie.?|M.?|Phone.?)?.([0-9]{2}).(\\d{2}).(\\d{3,4}).(\\d{4})";
-        String telpattern = "(Tel|T|TEL)?.(0[0-9]{1,2}).(\\d{3,4}).(\\d{4})";
-        String telpattern2 = "(Tel|T|TEL)?.([0-9]{2}).(\\d{1,2}).(\\d{3,4}).(\\d{4})";
+        String phonepattern = "(Moblie.?|M.?|Phone.?)?+(01[0-9]).(\\d{3,4}).(\\d{4})";
+        String phonepattern2 = "(Moblie.?|M.?|Phone.?)?+([0-9]{2}).(\\d{2}).(\\d{3,4}).(\\d{4})";
+        String telpattern = "(Tel.?|T.?|TEL.?)?+(0[0-9]{1,2}).(\\d{3,4}).(\\d{4})";
+        String telpattern2 = "(Tel.?|T.?|TEL.?)?+([0-9]{2}).(\\d{1,2}).(\\d{3,4}).(\\d{4})";
         String emailpattern = "\\b(\\S+)+@(\\S.\\S.\\S?)+";
         int phoneindex = -1;
         int telindex = -1;
@@ -215,87 +215,56 @@ public class add extends AppCompatActivity {
             }
         }
         /*Get Phone*/
+        String phonenum1="";
         for (int i = 0; i < result.length; i++) {
             pattern = Pattern.compile(phonepattern);
             matcher = pattern.matcher(result[i]);
             if (matcher.find()) {
                 phoneindex = i;
+                phonenum1 =matcher.group(0);
                 phonenum = matcher.group(0).replace(" ", "");
                 phonenum = phonenum.replace("+", "");
                         Log.v("matcher.group(0) ==", result[i].toString());
-                mEditTextPhone.setText(phonenum.trim());
+                mEditTextPhone.setText(phonenum);
             } else {
                 pattern = Pattern.compile(phonepattern2);
                 matcher = pattern.matcher(result[i]);
                 if (matcher.find()) {
                     phoneindex = i;
+                    phonenum1 =matcher.group(0);
                     phonenum = matcher.group(0).replace(" ", "");
-                    phonenum = phonenum.replace("+", "");
+                    //phonenum = phonenum.replace("+", "");
                     Log.v("matcher.group(0) ==", result[i].toString());
                     mEditTextPhone.setText(phonenum);
                 }
             }
         }
-
-        /*Get Tel*/
+        String t="";
+        String tmptell="";
         for (int i = 0; i < result.length; i++) {
             pattern = Pattern.compile(telpattern);
             matcher = pattern.matcher(result[i]);
             if(matcher.find()){
-                int j = matcher.groupCount();
-                if(j==1){
-                    mEditTextTel.setText(matcher.group(0));
-                }
-                if(j==2){
-                    if(!matcher.group(0).equals(phonenum)){
-                        mEditTextTel.setText(matcher.group(0));
+                while(matcher.find()) {
+                    if (!matcher.group(0).equals(phonenum1)) {
                         telindex = i;
-                    }else if(!matcher.group(1).equals(phonenum)){
-                        mEditTextTel.setText(matcher.group(1));
-                        telindex = i;
-                    }
-                }else if(j==3){
-                    if(matcher.group(0).equals(phonenum)){
-                        mEditTextTel.setText(matcher.group(1));
-                        telindex = i;
-
-                    }else if(matcher.group(1).equals(phonenum)){
-                        mEditTextTel.setText(matcher.group(0));
-                        telindex = i;
-
-                    }else if(matcher.group(2).equals(phonenum)){
-                        mEditTextTel.setText(matcher.group(0));
-                        telindex = i;
-
+                        t = matcher.group().replace(" ", "");
+                        t = t.replace("+", "");
+                        mEditTextTel.setText(t);
                     }
                 }
             }else{
+                int j=0;
                 pattern = Pattern.compile(telpattern2);
                 matcher = pattern.matcher(result[i]);
-                int j = matcher.groupCount();
-                if(j==1){
-                    mEditTextTel.setText(matcher.group(0));
-                }
-                if(j==2){
-                    if(!matcher.group(0).equals(phonenum)){
+                while(matcher.find()){
+                    Log.v("matcher.group(0) ==", result[i].toString());
+                    Log.v("matcher.group(0) ==", matcher.group(0));
+                    if(!matcher.group(0).equals(phonenum1)){
                         telindex = i;
-                        mEditTextTel.setText(matcher.group(0));
-                    }else if(!matcher.group(1).equals(phonenum)){
-                        telindex = i;
-                        mEditTextTel.setText(matcher.group(1));
-                    }
-                }else if(j==3){
-                    if(matcher.group(0).equals(phonenum)){
-                        telindex = i;
-                        mEditTextTel.setText(matcher.group(1));
-
-                    }else if(matcher.group(1).equals(phonenum)){
-                        telindex = i;
-                        mEditTextTel.setText(matcher.group(0));
-
-                    }else if(matcher.group(2).equals(phonenum)){
-                        telindex = i;
-                        mEditTextTel.setText(matcher.group(0));
+                        t = matcher.group().replace(" ","");
+                        t = t.replace("+","");
+                        mEditTextTel.setText(t);
 
                     }
                 }
@@ -391,9 +360,9 @@ public class add extends AppCompatActivity {
 
             Log.v("add 에서의 태그값은 :", name);
             if (check.equals("list")) {
-                serverURL = "http://192.168.1.102/bcm/insert.php";
+                serverURL = "http://192.168.202.73/bcm/insert.php";
             } else if (check.equals("mypage")||check.equals("list_update")) {
-                serverURL = "http://192.168.1.102/bcm/update.php";
+                serverURL = "http://192.168.202.73/bcm/update.php";
                 if(imgurl.equals("url")){
                     aleary_img = "no";
                 }else{
