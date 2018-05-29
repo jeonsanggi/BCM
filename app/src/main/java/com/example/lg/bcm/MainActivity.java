@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         sTess = new TessBaseAPI();
 
-        language = "eng";
+        language = "kor";
         datapath = getFilesDir()+"/tesseract/";
         if(checkFile(new File(datapath+"tessdata/")))
         {
@@ -433,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 exifDegree = 0;
             }
             Bitmap result_bitmap = (rotate(bitmap,exifDegree));
+            sTess.setImage(result_bitmap);
             int j = 0;
             TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
             if (!txtRecognizer.isOperational()) {
