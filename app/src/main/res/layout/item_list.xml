@@ -30,8 +30,8 @@
             android:layout_margin="5dp"
             android:padding="5dp" />
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:id="@+id/list_call_btn"
             android:src="@drawable/call_btn"
             android:scaleType="centerInside"/>
@@ -56,17 +56,42 @@
             android:layout_margin="5dp"
             android:padding="5dp" />
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:id="@+id/list_delete_btn"
             android:src="@drawable/delete_btn"
             android:scaleType="centerInside" />
     </LinearLayout>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:visibility="invisible"
-        android:id="@+id/list_phone"/>
+        android:id="@+id/textView_list_phone"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:id="@+id/textView_list_tel"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:id="@+id/textView_list_email"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:id="@+id/textView_list_address"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:id="@+id/textView_list_imgurl"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:id="@+id/user_id"/>
 </LinearLayout>
 
 

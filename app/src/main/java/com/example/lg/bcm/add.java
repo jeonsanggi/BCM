@@ -173,9 +173,9 @@ public class add extends AppCompatActivity {
                 String address=spinner_position[5];
 
                 if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+phone+".jpg";
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
                 }else if(from.equals("ocr")&&check.equals("mypage")) {
-                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                 }
                 InsertData task = new InsertData();
                 task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
@@ -389,9 +389,9 @@ public class add extends AppCompatActivity {
                 String email=spinner_position[4];
                 String address=spinner_position[5];
                 if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+phone+".jpg";
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
                 }else if(from.equals("ocr")&&check.equals("mypage")) {
-                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                 }
                 InsertData task = new InsertData();
                 task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
@@ -451,9 +451,9 @@ public class add extends AppCompatActivity {
 
             Log.v("add 에서의 태그값은 :", name);
             if (check.equals("list")) {
-                serverURL = "http://172.20.10.13/bcm/insert.php";
+                serverURL = "http://192.168.1.102/bcm/insert.php";
             } else if (check.equals("mypage")||check.equals("list_update")) {
-                serverURL = "http://172.20.10.13/bcm/update.php";
+                serverURL = "http://192.168.1.102/bcm/update.php";
                 if(imgurl.equals("url")){
                     aleary_img = "no";
                 }else{
@@ -486,10 +486,10 @@ public class add extends AppCompatActivity {
                     is_imgdata = "yes";
                     if(check.equals("mypage")) {
                         dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\"" + id + ".jpg\"" + lineEnd);
-                        imgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+                        imgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                     }else{
                         dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\"" + phone + ".jpg\"" + lineEnd);
-                        imgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+phone+".jpg";
+                        imgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
                     }
                     dos.writeBytes(lineEnd);
                     dos.write(bytes, 0, bytes.length);

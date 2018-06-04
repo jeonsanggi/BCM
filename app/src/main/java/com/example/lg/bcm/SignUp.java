@@ -406,7 +406,7 @@ public class SignUp extends AppCompatActivity {
             String imgurl="url";
             String is_imgdata="no";
             if(bytes!=null) {
-                imgurl = "http://172.20.10.13/bcm/users_dir/" + id + "/" + id + ".jpg";
+                imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
                 is_imgdata = "yes";
             }
 
@@ -414,7 +414,7 @@ public class SignUp extends AppCompatActivity {
             String twoHyphens = "--";
             String boundary = "****!@#*";
 
-            String serverURL = "http://172.20.10.13/bcm/signup.php";
+            String serverURL = "http://192.168.1.102/bcm/signup.php";
 
             try {
 

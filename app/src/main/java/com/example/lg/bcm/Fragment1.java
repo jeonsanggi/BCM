@@ -77,7 +77,10 @@ public class Fragment1 extends Fragment {
 
     private Button insert_bc_btn;
     ArrayList<HashMap<String, String>> mArrayList;
+    ArrayList<ListViewItem> listViewItems;
     ListView mlistView;
+    ListViewAdapter adapter;
+
     String mJsonString;
     //
     Context ct;
@@ -89,13 +92,14 @@ public class Fragment1 extends Fragment {
         View view =  (View) inflater.inflate(R.layout.fragment_fragment1, container, false);
         mlistView = (ListView) view.findViewById(R.id.listView_main_list);
 
-
+        listViewItems = new ArrayList<ListViewItem>();
+        mlistView.setAdapter(adapter);
         insert_bc_btn = (Button)view.findViewById(R.id.insert_bc_btn);
         mArrayList = new ArrayList<>();
         ct = inflater.getContext();
         GetData task = new GetData();
 
-        task.execute("http://172.20.10.13/bcm/getBCList.php");
+        task.execute("http://192.168.1.102/bcm/getBCList.php");
         insert_bc_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,22 +110,23 @@ public class Fragment1 extends Fragment {
         mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.v("IMGURL === ", mArrayList.get(position).get("imgurl"));
+               // Log.v("IMGURL === ", mArrayList.get(position).get("imgurl"));
+                ListViewItem item = (ListViewItem) adapterView.getItemAtPosition(position);
                 Intent intent = new Intent(getActivity(),List_show.class);
 
                 intent.putExtra("user_id",user_id);
-                intent.putExtra("company", mArrayList.get(position).get("company"));
-                intent.putExtra("name", mArrayList.get(position).get("name"));
-                intent.putExtra("phone", mArrayList.get(position).get("phone"));
-                intent.putExtra("tel", mArrayList.get(position).get("tel"));
-                intent.putExtra("email", mArrayList.get(position).get("email"));
-                intent.putExtra("address", mArrayList.get(position).get("address"));
-                intent.putExtra("imgurl", mArrayList.get(position).get("imgurl"));
+                intent.putExtra("company", item.getCompany());
+                intent.putExtra("name", item.getName());
+                intent.putExtra("phone", item.getPhone());
+                intent.putExtra("tel", item.getTel());
+                intent.putExtra("email", item.getEmail());
+                intent.putExtra("address", item.getAddress());
+                intent.putExtra("imgurl", item.getImgurl());
                 startActivity(intent);
-
 
             }
         });
+
         return view;
     }
     private void showDialog(){
@@ -252,6 +257,7 @@ public class Fragment1 extends Fragment {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
+
             for(int i=0;i<jsonArray.length();i++){
 
                 JSONObject item = jsonArray.getJSONObject(i);
@@ -263,9 +269,10 @@ public class Fragment1 extends Fragment {
                 String email = item.getString(TAG_EMAIL);
                 String address = item.getString(TAG_ADDRESS);
                 String imgurl = item.getString(TAG_IMGURL);
+                listViewItems.add(new ListViewItem(company,name,phone,tel,email,address,imgurl,user_id));
 
 
-                HashMap<String,String> hashMap = new HashMap<>();
+               /* HashMap<String,String> hashMap = new HashMap<>();
 
                 hashMap.put(TAG_COMPANY, company);
                 hashMap.put(TAG_NAME, name);
@@ -275,14 +282,14 @@ public class Fragment1 extends Fragment {
                 hashMap.put(TAG_ADDRESS, address);
                 hashMap.put(TAG_IMGURL,imgurl);
 
-                mArrayList.add(hashMap);
+                mArrayList.add(hashMap);*/
             }
-
-            ListAdapter adapter = new SimpleAdapter(
+            adapter = new ListViewAdapter(getContext(),user_id,listViewItems);
+            /*ListAdapter adapter = new SimpleAdapter(
                     ct, mArrayList, R.layout.item_list,
                     new String[]{TAG_COMPANY, TAG_NAME, TAG_PHONE},
-                    new int[]{ R.id.textView_list_company, R.id.textView_list_name, R.id.list_phone}
-            );
+                    new int[]{ R.id.textView_list_company, R.id.textView_list_name}
+            );*/
             mlistView.setAdapter(adapter);
 
         } catch (JSONException e) {
