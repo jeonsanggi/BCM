@@ -1,14 +1,25 @@
 package com.example.lg.bcm;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +33,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lg.bcm.R;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.Text;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +65,8 @@ public class add extends AppCompatActivity {
     private static final String TAG_JSON="webnautes";
     private static final String TAG_CHECK="check";
     private static String TAG = "phptest_MainActivity";
-
+    public static  final int CAPURE_CAMERA = 444;
+    public static  final int CROP_PHOTO = 555;
     private EditText mEditTextCompany;
     private EditText mEditTextName;
     private EditText mEditTextPhone;
@@ -58,6 +74,7 @@ public class add extends AppCompatActivity {
     private EditText mEditTextEmail;
     private EditText mEditTextAddress;
     private TextView mEditTextImgurl;
+    private Button capture_btn;
     private Spinner spinner1;
     private Spinner spinner2;
     private Spinner spinner3;
@@ -72,6 +89,8 @@ public class add extends AppCompatActivity {
     private String from="";
     private String check="";
     private Bitmap bitmap;
+    private Uri mImageCaptureUri;
+    private Bitmap result_bitmap;
     byte[] bytes;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +101,7 @@ public class add extends AppCompatActivity {
         mEditTextTel = (EditText) findViewById(R.id.editText_main_tel);
         mEditTextEmail = (EditText) findViewById(R.id.editText_main_email);
         mEditTextAddress = (EditText) findViewById(R.id.editText_main_address);
+        capture_btn = (Button) findViewById(R.id.recapture_camera_btn);
         imgview = (ImageView) findViewById(R.id.imgView);
         spinner1=(Spinner)findViewById(R.id.spinner1);
         spinner2=(Spinner)findViewById(R.id.spinner2);
@@ -153,12 +173,39 @@ public class add extends AppCompatActivity {
                 String address=spinner_position[5];
 
                 if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
+                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+phone+".jpg";
                 }else if(from.equals("ocr")&&check.equals("mypage")) {
-                    inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                 }
                 InsertData task = new InsertData();
                 task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
+            }
+        });
+        capture_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //기본 내장 되어있는 카메라를 사용하기위한 INTENT
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String url = "tmp+" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+                //사진촬영시 원본파일 임시저장 경로 받아오기
+                mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+                //카메라, 외부저장소 읽기/쓰기, 전화 권한 검사 및 획득
+                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+                    if(ContextCompat.checkSelfPermission(add.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED||
+                            ContextCompat.checkSelfPermission(add.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED||
+                            ContextCompat.checkSelfPermission(add.this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED||
+                            ContextCompat.checkSelfPermission(add.this,Manifest.permission.CALL_PHONE)!=PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(add.this,new String[]{Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.CALL_PHONE},1);
+                    }
+                    // 카메라 실행
+                    startActivityForResult(intent,CAPURE_CAMERA);
+                }else {
+                    startActivityForResult(intent, CAPURE_CAMERA);
+                }
             }
         });
 
@@ -166,6 +213,7 @@ public class add extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
     }
+
     void spiiner_init(){
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this,R.array.option,android.R.layout.simple_dropdown_item_1line);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -185,6 +233,7 @@ public class add extends AppCompatActivity {
     public void draw_ing(){
             Thread mThread = new Thread(){
                 @Override
+
                 public void run(){
                     try{
                         URL url = new URL(inimgurl);
@@ -323,39 +372,41 @@ public class add extends AppCompatActivity {
 
 
         //저장 button 클릭시 수정한 정보들을 전송
-        if(id == R.id.done){
-            String[] spinner_position = new String[6];
-            spinner_position[spinner1.getSelectedItemPosition()]=mEditTextCompany.getText().toString();
-            spinner_position[spinner2.getSelectedItemPosition()]=mEditTextName.getText().toString();
-            spinner_position[spinner3.getSelectedItemPosition()]=mEditTextPhone.getText().toString();
-            spinner_position[spinner4.getSelectedItemPosition()]=mEditTextTel.getText().toString();
-            spinner_position[spinner5.getSelectedItemPosition()]=mEditTextEmail.getText().toString();
-            spinner_position[spinner6.getSelectedItemPosition()]=mEditTextAddress.getText().toString();
+        switch (id){
+            case R.id.done:
+                String[] spinner_position = new String[6];
+                spinner_position[spinner1.getSelectedItemPosition()]=mEditTextCompany.getText().toString();
+                spinner_position[spinner2.getSelectedItemPosition()]=mEditTextName.getText().toString();
+                spinner_position[spinner3.getSelectedItemPosition()]=mEditTextPhone.getText().toString();
+                spinner_position[spinner4.getSelectedItemPosition()]=mEditTextTel.getText().toString();
+                spinner_position[spinner5.getSelectedItemPosition()]=mEditTextEmail.getText().toString();
+                spinner_position[spinner6.getSelectedItemPosition()]=mEditTextAddress.getText().toString();
 
-            String company=spinner_position[0];
-            String name=spinner_position[1];
-            String phone=spinner_position[2];
-            String tel=spinner_position[3];
-            String email=spinner_position[4];
-            String address=spinner_position[5];
-            if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
-                inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+phone+".jpg";
-            }else if(from.equals("ocr")&&check.equals("mypage")) {
-                inimgurl = "http://192.168.1.102/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
-            }
-            InsertData task = new InsertData();
-            task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
+                String company=spinner_position[0];
+                String name=spinner_position[1];
+                String phone=spinner_position[2];
+                String tel=spinner_position[3];
+                String email=spinner_position[4];
+                String address=spinner_position[5];
+                if(from.equals("ocr")&&(check.equals("list")||check.equals("list_update"))){
+                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+phone+".jpg";
+                }else if(from.equals("ocr")&&check.equals("mypage")) {
+                    inimgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
+                }
+                InsertData task = new InsertData();
+                task.execute(user_id,company,name,phone,tel,email,address,inimgurl);
+                return true;
+            case R.id.cancel :
+                Intent intent = getIntent();
+                setResult(0, intent);
+                finish();
+                return true;
 
+            case android.R.id.home:
+                finish();
+                return true;
 
         }
-        //취소 button 클릭시 이전 화면으로 전환
-        else if( id == R.id.cancel) {
-            Intent intent = getIntent();
-            setResult(0, intent);
-            finish();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -400,9 +451,9 @@ public class add extends AppCompatActivity {
 
             Log.v("add 에서의 태그값은 :", name);
             if (check.equals("list")) {
-                serverURL = "http://192.168.1.102/bcm/insert.php";
+                serverURL = "http://172.20.10.13/bcm/insert.php";
             } else if (check.equals("mypage")||check.equals("list_update")) {
-                serverURL = "http://192.168.1.102/bcm/update.php";
+                serverURL = "http://172.20.10.13/bcm/update.php";
                 if(imgurl.equals("url")){
                     aleary_img = "no";
                 }else{
@@ -435,8 +486,10 @@ public class add extends AppCompatActivity {
                     is_imgdata = "yes";
                     if(check.equals("mypage")) {
                         dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\"" + id + ".jpg\"" + lineEnd);
+                        imgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+user_id+".jpg";
                     }else{
                         dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\"" + phone + ".jpg\"" + lineEnd);
+                        imgurl = "http://172.20.10.13/bcm/users_dir/"+user_id+"/"+phone+".jpg";
                     }
                     dos.writeBytes(lineEnd);
                     dos.write(bytes, 0, bytes.length);
@@ -552,6 +605,190 @@ public class add extends AppCompatActivity {
                 return new String("Error: " + e.getMessage());
             }
         }
+    }
+    public void crop_photo(){
+        Intent cropintent = new Intent("com.android.camera.action.CROP");
+        cropintent.setDataAndType(mImageCaptureUri,"image/*");
+        cropintent.putExtra("scale",true);
+        cropintent.putExtra("output",mImageCaptureUri);
+        startActivityForResult(cropintent, CROP_PHOTO);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String result="";
+
+        if(resultCode != RESULT_OK){
+            return;
+        }
+        if(requestCode == CAPURE_CAMERA){
+            crop_photo();
+        }
+        if(requestCode == CROP_PHOTO) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 4;
+            Bitmap bitmap = BitmapFactory.decodeFile(mImageCaptureUri.getPath(),options);
+            ExifInterface exif = null;
+
+            try {
+                exif = new ExifInterface(mImageCaptureUri.getPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int exifOrientation;
+            int exifDegree;
+
+            if (exif != null) {
+                exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                exifDegree = exifOrientationToDegrees(exifOrientation);
+            } else {
+                exifDegree = 0;
+            }
+            //임시저장된 원본파일을 bitmap으로 변환 및 회전
+            result_bitmap = (rotate(bitmap,exifDegree));
+            //구글에서 재공하는 vision API중 TextRecognizer를 이용하여 글자 추출
+            TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+            if (!txtRecognizer.isOperational()) {
+            } else {
+                //Fram에 촬영한 사진 set
+                Frame frame = new Frame.Builder().setBitmap(result_bitmap).build();
+                // TextRecognizer로 추출한 TEXTBLOCK들을 SparseArray에 저장
+                SparseArray items = txtRecognizer.detect(frame);
+                //각 블럭들을 라인으로 나눔
+                for (int i = 0; i < items.size(); i++) {
+                    TextBlock item = (TextBlock) items.valueAt(i);
+                    if (i == 0) {
+                        mEditTextCompany.setText(item.getValue());
+                    } else if (i == 1) {
+                        mEditTextName.setText(item.getValue());
+                    } else {
+                        Log.v("Block", item.getValue());
+                        for (Text line : item.getComponents()) {
+                            Log.v("detect ocr ==", line.getValue());
+                            result += line.getValue().toString() + "/";
+                        }
+                    }
+                }
+            }
+
+            String[] split_result = result.split("/");
+            imgview.setImageBitmap(result_bitmap);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            result_bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
+
+            /* Pattern */
+            String phonepattern = "(Moblie.?|M.?|Phone.?)?.(01[0-9]).(\\d{3,4}).(\\d{4})";
+            String phonepattern2 = "(Moblie.?|M.?|Phone.?)?.([0-9]{2}).(\\d{2}).(\\d{3,4}).(\\d{4})";
+            String telpattern = "(Tel|T|TEL)?.(0[0-9]{1,2}).(\\d{3,4}).(\\d{4})";
+            String telpattern2 = "(Tel|T|TEL)?.([0-9]{2}).(\\d{1,2}).(\\d{3,4}).(\\d{4})";
+            String emailpattern = "\\b(\\S+)+@(\\S.\\S.\\S?)+";
+            int phoneindex = -1;
+            int telindex = -1;
+            int emailindex = -1;
+            Pattern pattern;
+            Matcher matcher;
+            String phonenum="";
+            String phonenum1="";
+
+        /*Get Email*/
+            pattern = Pattern.compile(emailpattern);
+            for (int i = 0; i < split_result.length; i++) {
+                matcher = pattern.matcher(split_result[i]);
+                if (matcher.find()) {
+                    emailindex = i;
+                    mEditTextEmail.setText(matcher.group(0));
+                }
+            }
+        /*Get Phone*/
+            for (int i = 0; i < split_result.length; i++) {
+                pattern = Pattern.compile(phonepattern);
+                matcher = pattern.matcher(split_result[i]);
+                if (matcher.find()) {
+                    while(matcher.find()) {
+                        phoneindex = i;
+                        phonenum1 = matcher.group(0);
+                        phonenum = matcher.group(0).replace(" ", "");
+                        phonenum = phonenum.replace("-","");
+                        phonenum = phonenum.replace("+", "");
+                        mEditTextPhone.setText(phonenum);
+                    }
+                } else {
+                    pattern = Pattern.compile(phonepattern2);
+                    matcher = pattern.matcher(split_result[i]);
+                    while (matcher.find()) {
+                        phoneindex = i;
+                        phonenum1 =matcher.group(0);
+                        phonenum = matcher.group(0).replace(" ","");
+                        phonenum = phonenum.replace("-","");
+                        phonenum = phonenum.replace("+", "");
+                        mEditTextPhone.setText(phonenum);
+                    }
+                }
+            }
+            String t="";
+            String tmptell="";
+            for (int i = 0; i < split_result.length; i++) {
+                pattern = Pattern.compile(telpattern);
+                matcher = pattern.matcher(split_result[i]);
+                if(matcher.find()){
+                    while(matcher.find()) {
+                        if (!matcher.group(0).equals(phonenum1)) {
+                            telindex = i;
+                            t = matcher.group().replace(" ", "");
+                            t = t.replace("-", "");
+                            t = t.replace("+", "");
+                            mEditTextTel.setText(t);
+                        }
+                    }
+                }else{
+                    int j=0;
+                    pattern = Pattern.compile(telpattern2);
+                    matcher = pattern.matcher(split_result[i]);
+                    while(matcher.find()){
+                        Log.v("matcher.group(0) ==", split_result[i].toString());
+                        Log.v("matcher.group(0) ==", matcher.group(0));
+                        if(!matcher.group(0).equals(phonenum1)){
+                            telindex = i;
+                            t = matcher.group().replace(" ","");
+                            t = t.replace("-", "");
+                            t = t.replace("+","");
+                            mEditTextTel.setText(t);
+
+                        }
+                    }
+                }
+            }
+            String add_result="";
+            for(int i=0;i<split_result.length;i++){
+                if(i==emailindex|i==telindex|i==phoneindex)
+                    continue;
+                else{
+                    add_result += split_result[i];
+                }
+            }
+            mEditTextAddress.setText(add_result);
+            File f = new  File(mImageCaptureUri.getPath());
+            if(f.exists())
+                f.delete();
+        }
+    }
+    private int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    private Bitmap rotate(Bitmap bitmap, float degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
     public void check_success(){
         try {

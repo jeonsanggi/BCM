@@ -11,66 +11,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_margin="15dp">
-
-   <!-- <TextView
-        android:id="@+id/textView_list_seq"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="5dp" />
-
-    <TextView
-        android:id="@+id/textView_list_company"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="5dp" />
-
-    <TextView
-        android:id="@+id/textView_list_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="4"
-        android:layout_margin="5dp" />
-
-    <TextView
-        android:id="@+id/textView_list_phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="5dp" />
-
-
-    <TextView
-        android:id="@+id/textView_list_tel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="5dp"/>
-
-    <TextView
-        android:id="@+id/textView_list_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="5dp" />
-
-    <TextView
-        android:id="@+id/textView_list_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:layout_margin="5dp" />-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/layout_image"/>
-
-    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,6 +29,12 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:padding="5dp" />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/list_call_btn"
+            android:src="@drawable/call_btn"
+            android:scaleType="centerInside"/>
 
     </LinearLayout>
     <LinearLayout
@@ -109,10 +55,18 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:padding="5dp" />
-
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/list_delete_btn"
+            android:src="@drawable/delete_btn"
+            android:scaleType="centerInside" />
     </LinearLayout>
-
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:id="@+id/list_phone"/>
 </LinearLayout>
 
 

@@ -179,7 +179,7 @@ public class Login extends AppCompatActivity{
         protected String doInBackground(String... params) {
             String user_id = (String)params[0];
             String user_pw = (String)params[1];
-            String serverURL = "http://192.168.1.102/bcm/login.php";
+            String serverURL = "http://172.20.10.13/bcm/login.php";
             String postParameters = "id=" + user_id + "&password=" + user_pw;
 
             try {

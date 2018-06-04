@@ -95,7 +95,7 @@ public class Fragment1 extends Fragment {
         ct = inflater.getContext();
         GetData task = new GetData();
 
-        task.execute("http://192.168.1.102/bcm/getBCList.php");
+        task.execute("http://172.20.10.13/bcm/getBCList.php");
         insert_bc_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -281,13 +281,13 @@ public class Fragment1 extends Fragment {
             ListAdapter adapter = new SimpleAdapter(
                     ct, mArrayList, R.layout.item_list,
                     new String[]{TAG_COMPANY, TAG_NAME, TAG_PHONE},
-                    new int[]{ R.id.textView_list_company, R.id.textView_list_name, R.id.textView_list_phone}
+                    new int[]{ R.id.textView_list_company, R.id.textView_list_name, R.id.list_phone}
             );
-
             mlistView.setAdapter(adapter);
 
         } catch (JSONException e) {
             Log.d(TAG, "showResult : ", e);
         }
     }
+
 }

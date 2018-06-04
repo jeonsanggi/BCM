@@ -8,13 +8,25 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
-        <ImageView
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:id="@+id/imgView"
-            android:background="@drawable/image_frame"
-            android:scaleType="centerInside"
-            android:layout_gravity="center_horizontal"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="300dp"
+                android:layout_height="200dp"
+                android:id="@+id/imgView"
+                android:background="@drawable/image_frame"
+                android:scaleType="centerInside"
+                android:layout_gravity="center_horizontal"/>
+            <Button
+                android:id="@+id/recapture_camera_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="명함 촬영"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

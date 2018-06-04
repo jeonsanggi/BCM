@@ -433,7 +433,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 exifDegree = 0;
             }
             Bitmap result_bitmap = (rotate(bitmap,exifDegree));
-            sTess.setImage(result_bitmap);
+            /*sTess.setImage(result_bitmap);
+            String tess_result = sTess.getUTF8Text();
+            Log.d("tess_result",tess_result);*/
             int j = 0;
             TextRecognizer txtRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
             if (!txtRecognizer.isOperational()) {

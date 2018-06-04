@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -15,12 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.renderscript.ScriptGroup;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -28,10 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
@@ -47,14 +41,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,9 +71,7 @@ public class SignUp extends AppCompatActivity {
     public static  final int CAPURE_CAMERA = 444;
     public static  final int CROP_PHOTO = 555;
     private Uri mImageCaptureUri;
-    private Bitmap resizedBitmap;
     private Bitmap result_bitmap;
-    private String string_byte;
     private byte[] bytes;
     String mJsonString;
     Spinner spinner1;
@@ -258,18 +247,22 @@ public class SignUp extends AppCompatActivity {
             bytes = byteArrayOutputStream.toByteArray();
 
             /* Pattern */
+            // 휴대전화패턴
             String phonepattern = "(Moblie.?|M.?|Phone.?)?.(01[0-9]).(\\d{3,4}).(\\d{4})";
             String phonepattern2 = "(Moblie.?|M.?|Phone.?)?.([0-9]{2}).(\\d{2}).(\\d{3,4}).(\\d{4})";
+            // 일반전화 패턴
             String telpattern = "(Tel|T|TEL)?.(0[0-9]{1,2}).(\\d{3,4}).(\\d{4})";
             String telpattern2 = "(Tel|T|TEL)?.([0-9]{2}).(\\d{1,2}).(\\d{3,4}).(\\d{4})";
+            // 이메일 패턴
             String emailpattern = "\\b(\\S+)+@(\\S.\\S.\\S?)+";
+            Pattern pattern;
+            Matcher matcher;
+
+            String phonenum="";
+            String phonenum1="";
             int phoneindex = -1;
             int telindex = -1;
             int emailindex = -1;
-            Pattern pattern;
-            Matcher matcher;
-            String phonenum="";
-            String phonenum1="";
 
         /*Get Email*/
             pattern = Pattern.compile(emailpattern);
@@ -413,7 +406,7 @@ public class SignUp extends AppCompatActivity {
             String imgurl="url";
             String is_imgdata="no";
             if(bytes!=null) {
-                imgurl = "http://192.168.1.102/bcm/users_dir/" + id + "/" + id + ".jpg";
+                imgurl = "http://172.20.10.13/bcm/users_dir/" + id + "/" + id + ".jpg";
                 is_imgdata = "yes";
             }
 
@@ -421,7 +414,7 @@ public class SignUp extends AppCompatActivity {
             String twoHyphens = "--";
             String boundary = "****!@#*";
 
-            String serverURL = "http://192.168.1.102/bcm/signup.php";
+            String serverURL = "http://172.20.10.13/bcm/signup.php";
 
             try {
 
