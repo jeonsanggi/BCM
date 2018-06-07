@@ -179,12 +179,12 @@ public class List_show extends AppCompatActivity implements View.OnClickListener
                 }
                 break;
             case R.id.delete_btn:
-                new deleteData().execute("http://192.168.1.102/bcm/delete_list_item.php");
+                new DeleteData().execute("http://192.168.1.102/bcm/delete_list_item.php");
                 break;
         }
     }
 
-    private class deleteData extends AsyncTask<String, Void, String> {
+    private class DeleteData extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String errorString = null;
 

@@ -271,25 +271,8 @@ public class Fragment1 extends Fragment {
                 String imgurl = item.getString(TAG_IMGURL);
                 listViewItems.add(new ListViewItem(company,name,phone,tel,email,address,imgurl,user_id));
 
-
-               /* HashMap<String,String> hashMap = new HashMap<>();
-
-                hashMap.put(TAG_COMPANY, company);
-                hashMap.put(TAG_NAME, name);
-                hashMap.put(TAG_PHONE, phone);
-                hashMap.put(TAG_TEL, tel);
-                hashMap.put(TAG_EMAIL, email);
-                hashMap.put(TAG_ADDRESS, address);
-                hashMap.put(TAG_IMGURL,imgurl);
-
-                mArrayList.add(hashMap);*/
             }
             adapter = new ListViewAdapter(getContext(),user_id,listViewItems);
-            /*ListAdapter adapter = new SimpleAdapter(
-                    ct, mArrayList, R.layout.item_list,
-                    new String[]{TAG_COMPANY, TAG_NAME, TAG_PHONE},
-                    new int[]{ R.id.textView_list_company, R.id.textView_list_name}
-            );*/
             mlistView.setAdapter(adapter);
 
         } catch (JSONException e) {

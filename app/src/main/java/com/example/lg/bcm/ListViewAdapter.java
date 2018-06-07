@@ -37,7 +37,10 @@ import java.util.ArrayList;
  */
 
 public class ListViewAdapter extends BaseAdapter {
-    TextView companyview;
+    private static String TAG = "phptest_MainActivity";
+    private static final String TAG_JSON = "delete_item";
+    private static final String TAG_CHECK = "check";
+    /*TextView companyview;
     TextView nameview;
     TextView phoneview;
     TextView telview;
@@ -45,8 +48,9 @@ public class ListViewAdapter extends BaseAdapter {
     TextView addressview;
     TextView imgurlview;
     ImageView call_btn;
-    ImageView delete_btn;
+    ImageView delete_btn;*/
     private ArrayList<ListViewItem> listViewItems;
+    String mJsonString;
     String user_id;
     Context context;
 
@@ -73,24 +77,29 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
-        int pos = position;
         if (view == null) {
-            /*LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.item_list,null);*/
             view = LayoutInflater.from(context).inflate(R.layout.item_list, null);
         }
-        companyview = (TextView) view.findViewById(R.id.textView_list_company);
-        nameview = (TextView) view.findViewById(R.id.textView_list_name);
-        phoneview = (TextView) view.findViewById(R.id.textView_list_phone);
-        telview = (TextView) view.findViewById(R.id.textView_list_tel);
-        emailview = (TextView) view.findViewById(R.id.textView_list_email);
-        addressview = (TextView) view.findViewById(R.id.textView_list_address);
-        imgurlview = (TextView) view.findViewById(R.id.textView_list_imgurl);
+        TextView companyview = (TextView) view.findViewById(R.id.textView_list_company);
+        TextView nameview = (TextView) view.findViewById(R.id.textView_list_name);
+        final TextView phoneview = (TextView) view.findViewById(R.id.textView_list_phone);
+        TextView telview = (TextView) view.findViewById(R.id.textView_list_tel);
+        TextView emailview = (TextView) view.findViewById(R.id.textView_list_email);
+        TextView addressview = (TextView) view.findViewById(R.id.textView_list_address);
+        final TextView imgurlview = (TextView) view.findViewById(R.id.textView_list_imgurl);
 
-        call_btn = (ImageView) view.findViewById(R.id.list_call_btn);
+        ImageView call_btn = (ImageView) view.findViewById(R.id.list_call_btn);
 
-        delete_btn = (ImageView) view.findViewById(R.id.list_delete_btn);
+        ImageView delete_btn = (ImageView) view.findViewById(R.id.list_delete_btn);
 
+
+        companyview.setText(listViewItems.get(position).getCompany());
+        nameview.setText(listViewItems.get(position).getName());
+        phoneview.setText(listViewItems.get(position).getPhone());
+        telview.setText(listViewItems.get(position).getTel());
+        emailview.setText(listViewItems.get(position).getEmail());
+        addressview.setText(listViewItems.get(position).getAddress());
+        imgurlview.setText(listViewItems.get(position).getImgurl());
         call_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,31 +116,12 @@ public class ListViewAdapter extends BaseAdapter {
             public void onClick(View view) {
                 DeleteData task = new DeleteData();
                 String url = "http://192.168.1.102/bcm/delete_list_item.php";
-                task.execute(url,phoneview.getText().toString());
+                task.execute(url,phoneview.getText().toString(),imgurlview.getText().toString());
             }
         });
-        companyview.setText(listViewItems.get(position).getCompany());
-        nameview.setText(listViewItems.get(position).getName());
-        phoneview.setText(listViewItems.get(position).getPhone());
-        telview.setText(listViewItems.get(position).getTel());
-        emailview.setText(listViewItems.get(position).getEmail());
-        addressview.setText(listViewItems.get(position).getAddress());
-        imgurlview.setText(listViewItems.get(position).getImgurl());
-
         return view;
     }
-    /*public void addItem(String user_id, String company,String name,String phone,String tel,String email,String address,String imgurl){
-        ListViewItem item = new ListViewItem();
-        item.setCompany(company);
-        item.setName(name);
-        item.setPhone(phone);
-        item.setTel(tel);
-        item.setEmail(email);
-        item.setAddress(address);
-        item.setImgurl(imgurl);
-        item.setUser_id(user_id);
-        listViewItems.add(item);
-    }*/
+
     private class DeleteData extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String errorString = null;
@@ -140,8 +130,8 @@ public class ListViewAdapter extends BaseAdapter {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            /*progressDialog = ProgressDialog.show(this,
-                    "Please Wait", null, true, true);*/
+            progressDialog = ProgressDialog.show(context,
+                    "Please Wait", null, true, true);
         }
 
 
@@ -150,20 +140,24 @@ public class ListViewAdapter extends BaseAdapter {
             super.onPostExecute(result);
 
             progressDialog.dismiss();
-            //mTextViewResult.setText(result);
+            Log.d(TAG, "response  - " + result);
             if (result == null) {
-                //  mTextViewResult.setText(errorString);
+
             } else {
-                //mJsonString = result;
+                mJsonString = result;
+                showResult();
             }
         }
-
-
         @Override
         //http 통신 및 해당 id에대한 정보를 가져옴
         protected String doInBackground(String... params) {
             String serverURL = params[0];
-            //String postParameters = "id=" + user_id + "&phone=" + phone;
+            String phone = params[1];
+            Log.d("phone",phone);
+            Log.d("phone",user_id);
+            String is_img = params[2];
+            Log.d("is_img",is_img);
+            String postParameters = "id=" + user_id + "&phone=" + phone+"&is_img="+is_img;
 
             //id에 대한 정보들을 DB에서 가져옴
             try {
@@ -177,12 +171,12 @@ public class ListViewAdapter extends BaseAdapter {
                 httpURLConnection.connect();
 
                 OutputStream outputStream = httpURLConnection.getOutputStream();
-                //outputStream.write(postParameters.getBytes("UTF-8"));
+                outputStream.write(postParameters.getBytes("UTF-8"));
                 outputStream.flush();
                 outputStream.close();
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
-
+                Log.d(TAG, "response code - " + responseStatusCode);
 
                 InputStream inputStream;
                 if (responseStatusCode == HttpURLConnection.HTTP_OK) {
@@ -204,11 +198,37 @@ public class ListViewAdapter extends BaseAdapter {
                 bufferedReader.close();
                 return sb.toString().trim();
             } catch (Exception e) {
-
+                Log.d(TAG, "InsertData: Error ", e);
                 errorString = e.toString();
 
                 return null;
             }
+        }
+    }
+    public void showResult() {
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+            JSONObject item = jsonArray.getJSONObject(0);
+
+            String check = item.getString(TAG_CHECK);
+            switch (check) {
+                case "success":
+                    Toast.makeText(context, "삭제되었습니다", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context,MainActivity.class);
+                    intent.putExtra("user_id",user_id);
+                    context.startActivity(intent);
+                    break;
+                case "sql_error":
+                    Toast.makeText(context, "SQL 에러", Toast.LENGTH_SHORT).show();
+                    break;
+                case "delete_img_error":
+                    Toast.makeText(context, "서버 이미지 삭제 에러", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        } catch (JSONException e) {
+            Log.d(TAG, "showResult : ", e);
         }
     }
 
